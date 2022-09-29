@@ -1,0 +1,37 @@
+Item,Category,Qty,Notes
+Muffins,B,0.0,"Out of Stock. Check ""unfulfilled.csv"". "
+Pineapples,F,0.0,"Out of Stock. Check ""unfulfilled.csv"". "
+Potatoes,V,0.0,"Out of Stock. Check ""unfulfilled.csv"". "
+Lemons,F,0.0,"Out of Stock. Check ""unfulfilled.csv"". "
+Margarine,D,0.0,"Out of Stock. Check ""unfulfilled.csv"". "
+Buns,B,0.0,"Out of Stock. Check ""unfulfilled.csv"". "
+Carrots,V,0.0,"Out of Stock. Check ""unfulfilled.csv"". "
+Raspberries,F,0.0,"Out of Stock. Check ""unfulfilled.csv"". "
+Oranges,F,20.0,In Stock
+Pears,F,45.0,In Stock
+Butter,D,23.0,In Stock
+Cookies,B,6.0,In Stock
+Yogurt,D,38.0,In Stock
+Sprouts,V,69.0,In Stock
+Baguette,B,37.0,In Stock
+Tomatoes,V,16.0,In Stock
+Cherries,F,41.0,In Stock
+Turnips,V,55.0,In Stock
+Peaches,F,99.0,In Stock
+Peppers,V,18.0,In Stock
+Custard,D,30.0,In Stock
+Zucchini,V,17.0,In Stock
+Apples,F,86.0,In Stock
+Grapes,F,146.0,In Stock
+Kiwis,F,19.0,In Stock
+Bananas,F,50.0,In Stock
+Cheese,D,102.0,In Stock
+Croissants,B,10.0,In Stock
+Mushroom,V,103.0,In Stock
+Cakes,B,88.0,In Stock
+Doughnuts,B,65.0,In Stock
+Onions,V,26.0,In Stock
+Cream,D,103.0,In Stock
+Milk,D,23.0,In Stock
+Strawberries,F,16.0,In Stock
+Leeks,V,11.0,In Stock
