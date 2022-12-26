@@ -7,7 +7,7 @@ def setup_db(db_path="inventory.db"):
     c.execute(
         """CREATE TABLE IF NOT EXISTS categories(
         category_id INTEGER PRIMARY KEY,
-        category_name TEXT NOT NULL"""
+        category_name TEXT NOT NULL UNIQUE)"""
     )
     c.execute(
         """CREATE TABLE IF NOT EXISTS products(
@@ -34,8 +34,8 @@ def setup_db(db_path="inventory.db"):
         FOREIGN KEY (product_id) REFERENCES products(product_id)
         ON UPDATE CASCADE,
         FOREIGN KEY (store_id) REFERENCES stores(store_id)
-        ON UPDATE CASCADE)
-        UNIQUE (product_id, store_id)"""
+        ON UPDATE CASCADE,
+        UNIQUE (product_id, store_id))"""
     )
 
     conn.commit()
