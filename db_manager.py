@@ -42,9 +42,10 @@ def setup_db(db_path="inventory.db"):
         """CREATE TABLE IF NOT EXISTS orders(
             order_id INTEGER PRIMARY KEY,
             store_id INTEGER NOT NULL,
-            fulfilled BOOLEAN NOT NULL DEFAULT 0,
+            status_id INTEGER NOT NULL,
             FOREIGN KEY (store_id) REFERENCES stores(store_id)
-            ON UPDATE CASCADE
+            ON UPDATE CASCADE,
+            FOREIGN KEY (status_id) REFERENCES status(status_id) ON UPDATE CASCADE 
         )"""
     )
 
@@ -53,8 +54,9 @@ def setup_db(db_path="inventory.db"):
         order_id INTEGER NOT NULL,
         product_id INTEGER NOT NULL,
         qty INTEGER NOT NULL,
+        in_stock INTEGER BOOLEAN NOT NULL,
         FOREIGN KEY (order_id) REFERENCE store(store_id)
-        ON UPDATE CASCADE
+        ON UPDATE CASCADE,
         FOREIGN KEY (product_id) REFERENCE products(product_id) ON UPDATE CASCADE,
         UNIQUE (order_id, product_id)
     )"""
@@ -63,9 +65,10 @@ def setup_db(db_path="inventory.db"):
     c.execute(
         """CREATE TABLE IF NOT EXISTS restock_orders(restock_order_id INTEGER PRIMARY KEY,
             store_id INTEGER NOT NULL,
-            fulfilled BOOLEAN NOT NULL DEFAULT 0,
+            status_id INTEGER NOT NULL,
             FOREIGN KEY (store_id) REFERENCES stores(store_id)
-            ON UPDATE CASCADE)"""
+            ON UPDATE CASCADE,
+            FOREIGN KEY (status_id) REFERENCES status(status_id) ON UPDATE CASCADE)"""
     )
 
     c.execute(
@@ -77,6 +80,12 @@ def setup_db(db_path="inventory.db"):
         FOREIGN KEY (restock_order_id) REFERENCE restock_orders(restock_order_id)"""
     )
 
+    c.execute(
+        """CREATE TABLE IF NOT EXISTS status(
+            status_id INTEGER PRIMARY KEY,
+            status TEXT NOT NULL
+        )"""
+    )
     conn.commit()
     conn.close()
 
