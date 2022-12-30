@@ -38,6 +38,45 @@ def setup_db(db_path="inventory.db"):
         UNIQUE (product_id, store_id))"""
     )
 
+    c.execute(
+        """CREATE TABLE IF NOT EXISTS orders(
+            order_id INTEGER PRIMARY KEY,
+            store_id INTEGER NOT NULL,
+            fulfilled BOOLEAN NOT NULL DEFAULT 0,
+            FOREIGN KEY (store_id) REFERENCES stores(store_id)
+            ON UPDATE CASCADE
+        )"""
+    )
+
+    c.execute(
+        """CREATE TABLE IF NOT EXISTS order_details(
+        order_id INTEGER NOT NULL,
+        product_id INTEGER NOT NULL,
+        qty INTEGER NOT NULL,
+        FOREIGN KEY (order_id) REFERENCE store(store_id)
+        ON UPDATE CASCADE
+        FOREIGN KEY (product_id) REFERENCE products(product_id) ON UPDATE CASCADE,
+        UNIQUE (order_id, product_id)
+    )"""
+    )
+
+    c.execute(
+        """CREATE TABLE IF NOT EXISTS restock_orders(restock_order_id INTEGER PRIMARY KEY,
+            store_id INTEGER NOT NULL,
+            fulfilled BOOLEAN NOT NULL DEFAULT 0,
+            FOREIGN KEY (store_id) REFERENCES stores(store_id)
+            ON UPDATE CASCADE)"""
+    )
+
+    c.execute(
+        """CREATE TABLE IF NOT EXISTS restock_order_details(restock_order_id INTEGER NOT NULL,
+        store_id INTEGER NOT NULL,
+        product_id INTEGER NOT NULL,
+        qty INTEGER NOT NULL,
+        received BOOLEAN NOT NULL DEFAULT 0,
+        FOREIGN KEY (restock_order_id) REFERENCE restock_orders(restock_order_id)"""
+    )
+
     conn.commit()
     conn.close()
 
@@ -64,7 +103,6 @@ class Inventory:
             (product_name, category_name),
         )
         self.conn.commit()
-        self.conn.close()
 
     def add_store(self, street_n, street_name, city, ZIP):
         try:
@@ -76,6 +114,50 @@ class Inventory:
         except sqlite3.IntegrityError:
             print("Store already exists")
         self.conn.commit()
+
+    def add_order(self, store_id, items):
+        self.c.execute(
+            """INSERT INTO orders(store_id)
+            VALUES (?)""",
+            (store_id,),
+        )
+        self.conn.commit()
+        self.c.execute(
+            """SELECT order_id FROM orders
+            WHERE store_id = ? AND fulfilled = 0""",
+            (store_id,),
+        )
+        order_id = self.c.fetchone()
+
+        for item in items:
+            self.c.execute(
+                """INSERT INTO order_details(order_id, product_id, qty) VALUES (?, ?, ?)""",
+                (order_id, item[1], item[2]),
+            )
+
+        return order_id[0]
+
+    def add_restock_order(self, store_id, items):
+        self.c.execute(
+            """INSERT INTO restock_orders(store_id)
+            VALUES (?)""",
+            (store_id,),
+        )
+        self.conn.commit()
+        self.c.execute(
+            """SELECT restock_order_id FROM restock_orders
+            WHERE store_id = ? AND fulfilled = 0""",
+            (store_id,),
+        )
+        restock_order_id = self.c.fetchone()
+
+        for item in items:
+            self.c.execute(
+                """INSERT INTO restock_order_details(restock_order_id, product_id, qty) VALUES (?, ?, ?)""",
+                (restock_order_id, item[1], item[2]),
+            )
+
+        return restock_order_id[0]
 
     def restock(self, restock_file):
         # read restock_file
@@ -93,17 +175,25 @@ class Inventory:
                 (product_name, store_id, qty, qty),
             )
         self.conn.commit()
-        self.conn.close()
 
-    def fulfill_order(self, order_file="restock.csv"):
-        # read order_file
-        with open(order_file, "r") as f:
-            order_lines = f.read().splitlines()
+    def check_instore_product_availability(self, product_name, store_id):
+        self.c.execute(
+            """SELECT qty FROM stock
+            WHERE product_id = (SELECT product_id FROM products WHERE product_name = ?)
+            AND store_id = ?""",
+            (product_name, store_id),
+        )
+        qty = self.c.fetchone()
+        if qty is None:
+            return 0
+        else:
+            return qty[0]
 
-        # for each line in order_file, if the store_id and product_id are in stock, update the qty by subtracting the new qty from the old qty
+    def fulfill_order(self, order):
+        # for item in the order, if the store_id and product_id are in stock, update the qty by subtracting the new qty from the old qty
         try:
-            for line in order_lines:
-                store_id, product_name, qty = line.split(",")
+            for item in order.items:
+                store_id, product_name, qty = item
                 self.c.execute(
                     """UPDATE stock SET qty = stock.qty - ?
                     WHERE product_id = (SELECT product_id FROM products WHERE product_name = ?)
@@ -111,14 +201,13 @@ class Inventory:
                     (qty, product_name, store_id),
                 )
             self.conn.commit()
-        except sqlite3.IntegrityError:
-            print(f"{product_name}: Not enough stock")
-
-        except sqlite3.OperationalError:
-            print(f"{product_name}: Product not in stock")
+        except (sqlite3.IntegrityError, sqlite3.OperationalError):
+            out_of_stock = [
+                i[1]
+                for i in order.items
+                if self.check_instore_product_availability(i[0], i[1]) < int(i[2])
+            ]
+            print(f"Out of stock: {', '.join(out_of_stock)}")
 
     def __del__(self):
         self.conn.close()
-
-
-# TO DO: impelement check for qty in stock for all items in the order before fulfilling order
