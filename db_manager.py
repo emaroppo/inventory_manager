@@ -1,100 +1,98 @@
 import sqlite3
+import reader
 
 
-def setup_db(db_path="inventory.db"):
-    conn = sqlite3.connect(db_path)
-    c = conn.cursor()
-    c.execute(
-        """CREATE TABLE IF NOT EXISTS categories(
-        category_id INTEGER PRIMARY KEY,
-        category_name TEXT NOT NULL UNIQUE)"""
-    )
-    c.execute(
-        """CREATE TABLE IF NOT EXISTS products(
-        product_id INTEGER PRIMARY KEY,
-        product_name TEXT NOT NULL,
-        category_id INTEGER NOT NULL,
-        FOREIGN KEY (category_id) REFERENCES categories(category_id)
-        ON UPDATE CASCADE)"""
-    )
-    c.execute(
-        """CREATE TABLE IF NOT EXISTS stores(
-        store_id INTEGER PRIMARY KEY,
-        street_n TEXT NOT NULL,
-        street_name TEXT NOT NULL,
-        city TEXT NOT NULL,
-        ZIP INTEGER NOT NULL,
-        UNIQUE (street_n, street_name, city, ZIP))"""
-    )
-    c.execute(
-        """CREATE TABLE IF NOT EXISTS stock(
-        product_id INTEGER NOT NULL,
-        store_id INTEGER NOT NULL,
-        qty INTEGER NOT NULL CHECK (qty >= 0),
-        FOREIGN KEY (product_id) REFERENCES products(product_id)
-        ON UPDATE CASCADE,
-        FOREIGN KEY (store_id) REFERENCES stores(store_id)
-        ON UPDATE CASCADE,
-        UNIQUE (product_id, store_id))"""
-    )
-
-    c.execute(
-        """CREATE TABLE IF NOT EXISTS orders(
-            order_id INTEGER PRIMARY KEY,
-            store_id INTEGER NOT NULL,
-            status_id INTEGER NOT NULL,
-            FOREIGN KEY (store_id) REFERENCES stores(store_id)
-            ON UPDATE CASCADE,
-            FOREIGN KEY (status_id) REFERENCES status(status_id) ON UPDATE CASCADE 
-        )"""
-    )
-
-    c.execute(
-        """CREATE TABLE IF NOT EXISTS order_details(
-        order_id INTEGER NOT NULL,
-        product_id INTEGER NOT NULL,
-        qty INTEGER NOT NULL,
-        in_stock INTEGER BOOLEAN NOT NULL,
-        FOREIGN KEY (order_id) REFERENCE store(store_id)
-        ON UPDATE CASCADE,
-        FOREIGN KEY (product_id) REFERENCE products(product_id) ON UPDATE CASCADE,
-        UNIQUE (order_id, product_id)
-    )"""
-    )
-
-    c.execute(
-        """CREATE TABLE IF NOT EXISTS restock_orders(restock_order_id INTEGER PRIMARY KEY,
-            store_id INTEGER NOT NULL,
-            status_id INTEGER NOT NULL,
-            FOREIGN KEY (store_id) REFERENCES stores(store_id)
-            ON UPDATE CASCADE,
-            FOREIGN KEY (status_id) REFERENCES status(status_id) ON UPDATE CASCADE)"""
-    )
-
-    c.execute(
-        """CREATE TABLE IF NOT EXISTS restock_order_details(restock_order_id INTEGER NOT NULL,
-        store_id INTEGER NOT NULL,
-        product_id INTEGER NOT NULL,
-        qty INTEGER NOT NULL,
-        received BOOLEAN NOT NULL DEFAULT 0,
-        FOREIGN KEY (restock_order_id) REFERENCE restock_orders(restock_order_id)"""
-    )
-
-    c.execute(
-        """CREATE TABLE IF NOT EXISTS status(
-            status_id INTEGER PRIMARY KEY,
-            status TEXT NOT NULL
-        )"""
-    )
-    conn.commit()
-    conn.close()
-
-
-class Inventory:
+class DBBuilder:
     def __init__(self, db_path="inventory.db"):
         self.db_path = db_path
-        self.conn = sqlite3.connect(self.db_path)
+        self.conn = sqlite3.connect(db_path)
         self.c = self.conn.cursor()
+
+    def set_up_tables(self):
+        self.c.execute(
+            """CREATE TABLE IF NOT EXISTS categories(
+        category_id INTEGER PRIMARY KEY,
+        category_name TEXT NOT NULL UNIQUE)"""
+        )
+        self.c.execute(
+            """CREATE TABLE IF NOT EXISTS products(
+            product_id INTEGER PRIMARY KEY,
+            product_name TEXT NOT NULL,
+            category_id INTEGER NOT NULL,
+            FOREIGN KEY (category_id) REFERENCES categories(category_id)
+            ON UPDATE CASCADE)"""
+        )
+        self.c.execute(
+            """CREATE TABLE IF NOT EXISTS stores(
+            store_id INTEGER PRIMARY KEY,
+            street_n TEXT NOT NULL,
+            street_name TEXT NOT NULL,
+            city TEXT NOT NULL,
+            ZIP INTEGER NOT NULL,
+            UNIQUE (street_n, street_name, city, ZIP))"""
+        )
+        self.c.execute(
+            """CREATE TABLE IF NOT EXISTS stock(
+            product_id INTEGER NOT NULL,
+            store_id INTEGER NOT NULL,
+            qty INTEGER NOT NULL CHECK (qty >= 0),
+            FOREIGN KEY (product_id) REFERENCES products(product_id)
+            ON UPDATE CASCADE,
+            FOREIGN KEY (store_id) REFERENCES stores(store_id)
+            ON UPDATE CASCADE,
+            UNIQUE (product_id, store_id))"""
+        )
+
+        self.c.execute(
+            """CREATE TABLE IF NOT EXISTS orders(
+                order_id INTEGER PRIMARY KEY,
+                store_id INTEGER NOT NULL,
+                status_id INTEGER NOT NULL,
+                FOREIGN KEY (store_id) REFERENCES stores(store_id)
+                ON UPDATE CASCADE,
+                FOREIGN KEY (status_id) REFERENCES status(status_id) ON UPDATE CASCADE 
+            )"""
+        )
+
+        self.c.execute(
+            """CREATE TABLE IF NOT EXISTS order_details(
+            order_id INTEGER NOT NULL,
+            product_id INTEGER NOT NULL,
+            qty INTEGER NOT NULL,
+            in_stock INTEGER BOOLEAN NOT NULL,
+            FOREIGN KEY (order_id) REFERENCE store(store_id)
+            ON UPDATE CASCADE,
+            FOREIGN KEY (product_id) REFERENCE products(product_id) ON UPDATE CASCADE,
+            UNIQUE (order_id, product_id)
+        )"""
+        )
+
+        self.c.execute(
+            """CREATE TABLE IF NOT EXISTS restock_orders(restock_order_id INTEGER PRIMARY KEY,
+                store_id INTEGER NOT NULL,
+                status_id INTEGER NOT NULL,
+                FOREIGN KEY (store_id) REFERENCES stores(store_id)
+                ON UPDATE CASCADE,
+                FOREIGN KEY (status_id) REFERENCES status(status_id) ON UPDATE CASCADE)"""
+        )
+
+        self.c.execute(
+            """CREATE TABLE IF NOT EXISTS restock_order_details(restock_order_id INTEGER NOT NULL,
+            store_id INTEGER NOT NULL,
+            product_id INTEGER NOT NULL,
+            qty INTEGER NOT NULL,
+            received BOOLEAN NOT NULL DEFAULT 0,
+            FOREIGN KEY (restock_order_id) REFERENCE restock_orders(restock_order_id)"""
+        )
+
+        self.c.execute(
+            """CREATE TABLE IF NOT EXISTS status(
+                status_id INTEGER PRIMARY KEY,
+                status TEXT NOT NULL
+            )"""
+        )
+
+        self.conn.commit()
 
     def add_category(self, category_name):
         self.c.execute(
@@ -123,6 +121,36 @@ class Inventory:
         except sqlite3.IntegrityError:
             print("Store already exists")
         self.conn.commit()
+
+    def update_stores_table(self, stores):
+        for store in stores:
+            self.add_store(store.street_n, store.street_name, store.city, store.ZIP)
+
+    def update_products_table(self, products):
+        for product in products:
+            self.add_product(product.product_name, product.category_name)
+
+    def setup_example_db(self):
+        self.setup_db()
+        stores = reader.stores_from_csv("examples/stores.csv")
+        with open("examples/categories.csv", "r") as f:
+            categories = f.read().splitlines()
+            for category in categories:
+                self.add_category(category)
+
+        self.update_stores_table(stores)
+        products = reader.products_from_csv("examples/products.csv")
+        self.update_products_table(products)
+
+    def __del__(self):
+        self.conn.close()
+
+
+class Inventory:
+    def __init__(self, db_path="inventory.db"):
+        self.db_path = db_path
+        self.conn = sqlite3.connect(self.db_path)
+        self.c = self.conn.cursor()
 
     def add_order(self, store_id, items):
         self.c.execute(
