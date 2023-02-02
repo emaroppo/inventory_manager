@@ -5,11 +5,12 @@ Wanted to take a hand at rewriting the code to test how I would approach the sam
 
 ## Flowchart
 ___
-<img src="diagrams/flowchart_latest.png">
+<img src="./diagrams/flowchart_restock_latest.png">
+<img src="./diagrams/flowchart_order_latest.png">
 
 ## ERD
 ___
-<img src="diagrams/erd_latest.png">
+<img src="./diagrams/erd_latest.png">
 
 ## TO DOs:
 ___
