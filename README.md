@@ -3,17 +3,26 @@ The project was originally a university assignment requiring a set of functions 
 
 Wanted to take a hand at rewriting the code to test how I would approach the same task several years down the line.
 
-## Flowchart
+## Diagrams
 ___
-<img src="./diagrams/flowchart_restock_latest.png">
-<img src="./diagrams/flowchart_order_latest.png">
 
-## ERD
-___
-<img src="./diagrams/erd_latest.png">
+<details>
+    <summary>ERD</summary>
+    <img src="./diagrams/erd_latest.png">
+</details>
+<details>
+    <summary>Flowcharts</summary>
+    <ul>
+        <li><details><summary>Restock</summary><img src="./diagrams/flowchart_restock_latest.png"></details></li>
+        <li><details><summary>Order</summary><img src="./diagrams/flowchart_order_latest.png"></details></li>
+    </ul>
+</details>
 
 ## TO DOs:
 ___
 - ### Goal 0: implement ERD/flowchart
+    - Update Tables Schema
+    - Update classes
+    - Implement flowchart
 - ### Goal 1: command line tool
 - ### Goal 2: web interface  
