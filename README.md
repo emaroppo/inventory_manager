@@ -20,13 +20,6 @@ ___
 
 ## TO DOs:
 ___
-- ### Goal 0: implement ERD/flowchart
-    - ~~ Update Tables Schema ~~
-    - ~~ Separate scripts for recording categories/products/stores & placing orders ~~
-        - ~~ Record example setup from csv ~~
-    - Update classes -> TO TEST
-    - Create Customer class -> TO EXPAND
-        - Place_order method
-    - Implement flowchart -> NEXT
+- ### <del>Goal 0: implement ERD/flowchart</del>
 - ### Goal 1: command line tool
 - ### Goal 2: web interface  
