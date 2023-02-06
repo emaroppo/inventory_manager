@@ -16,7 +16,7 @@ class Product:
             """SELECT qty FROM stock WHERE product_id = ? AND store_id= ?""",
             (self.product_id, store_id),
         )
-        qty = self.c.fetchone()
+        qty = self.db.c.fetchone()[0]
 
         if qty is None or qty < order_qty:
             return False
@@ -64,7 +64,7 @@ class Store:
         
         elif len(order.available_items) == len(order.items) or order.partial:
             for item in order.shippable_items:
-                self.db.ship_item(order_id=order.order_id, product_id=item[0].product_id)
+                self.db.ship_item(store_id=self.store_id, qty=item[1], order_id=order.order_id, product_id=item[0].product_id)
             self.db.update_order_status(order_id=order.order_id)
 
         else:
@@ -79,7 +79,6 @@ class Store:
     def receive_restock(self, items, restock_id):
         for item in items:
             self.db.receive_restock(restock_id, self.store_id, item[0].product_id, item[1])
-            self.db.add_stock(self.store_id, item[0].product_id, item[1])
         self.db.update_restock_status(restock_id=restock_id)
     
  

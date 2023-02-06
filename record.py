@@ -47,7 +47,7 @@ class DBManager:
         self.c.execute(
             "SELECT product_name, category_id FROM products WHERE product_id = ?", (product_id,)
         )
-        return self.c.fetchone()[0]
+        return self.c.fetchone()
 
     def add_category(self, category_name):
         self.c.execute(
@@ -85,15 +85,16 @@ class DBManager:
         for item in items:
             self.c.execute("""INSERT INTO order_details(order_id, product_id, qty, in_stock)
             VALUES (?,?,?,?)""", (order_id, item[0].product_id, item[1], item[0].in_stock(store_id, item[1])))
+        self.conn.commit()
         return order_id
     
     def retrieve_order(self, order_id):
-        self.c.execute("""SELECT store_id FROM orders WHERE order_id = ?""", (order_id,))
-        store_id = self.c.fetchone()[0]
+        self.c.execute("""SELECT store_id, status_id FROM orders WHERE order_id = ?""", (order_id,))
+        store_id, status_id = self.c.fetchone()
         #add retrieve status
         self.c.execute("""SELECT product_id, qty, shipped FROM order_details WHERE order_id = ?""", (order_id,))
         items = self.c.fetchall()
-        return store_id, items
+        return (store_id, status_id), items
         
     def ship_item(self, order_id, store_id, product_id, qty):
         try:
@@ -126,40 +127,41 @@ class DBManager:
             self.conn.commit()
     
     def add_restock(self, store_id, items):
-        self.c.execute("""INSERT INTO restocks(store_id)
+        self.c.execute("""INSERT INTO restock_orders(store_id)
         VALUES (?)""", (store_id,))
         restock_id = self.c.lastrowid
         for item in items:
-            self.c.execute("""INSERT INTO restock_details(restock_id, product_id, qty)
+            self.c.execute("""INSERT INTO restock_order_details(restock_order_id, product_id, qty)
             VALUES (?,?,?)""", (restock_id, item[0].product_id, item[1]))
         return restock_id
     
     def receive_restock(self, restock_id, store_id, product_id, qty):
         
         #update stock
-        self.c.execute("""UPDATE stock SET qty = qty + ? WHERE product_id = ? AND store_id = ?""", (qty, product_id, store_id))
+        self.c.execute("""INSERT INTO stock(store_id, product_id, qty)
+        VALUES (?,?,?) ON CONFLICT(store_id, product_id) DO UPDATE SET qty = qty + ?""", (store_id, product_id, qty, qty))
         #mark item as received
-        self.c.execute("""UPDATE restock_details SET received = 1 WHERE restock_id = ? AND product_id = ?""", (restock_id, product_id))
+        self.c.execute("""UPDATE restock_order_details SET received = 1 WHERE restock_order_id = ? AND product_id = ?""", (restock_id, product_id))
 
 
         self.conn.commit()
     
     def update_restock_status(self, restock_id):
         #if all items are received, update restock status to restock_id=2
-        self.c.execute("""SELECT received FROM restock_details WHERE restock_id = ?""", (restock_id,))
+        self.c.execute("""SELECT received FROM restock_order_details WHERE restock_order_id = ?""", (restock_id,))
         received = self.c.fetchall()
         if all(received):
-            self.c.execute("""UPDATE restocks SET status_id = 2 WHERE restock_id = ?""", (restock_id,))
+            self.c.execute("""UPDATE restock_orders SET status_id = 2 WHERE restock_order_id = ?""", (restock_id,))
             self.conn.commit()
         #if some items are received, update restock status to restock_id=1
         elif any(received):
-            self.c.execute("""UPDATE restocks SET status_id = 1 WHERE restock_id = ?""", (restock_id,))
+            self.c.execute("""UPDATE restock_orders SET status_id = 1 WHERE restock_order_id = ?""", (restock_id,))
             self.conn.commit()
 
         #if no items are received, update restock status to restock_id=0
         
         else :
-            self.c.execute("""UPDATE restocks SET status_id = 0 WHERE restock_id = ?""", (restock_id,))
+            self.c.execute("""UPDATE restocks SET status_id = 0 WHERE restock_order_id = ?""", (restock_id,))
             self.conn.commit()
             
 
@@ -189,3 +191,6 @@ class DBManager:
             for row in reader:
                 status_id, status = row[0], row[1]
                 self.add_status(status_id, status)
+
+    def __del__(self):
+        self.conn.close()

@@ -1,6 +1,7 @@
 import sqlite3
 import classes
 
+
 class DBBuilder:
     def __init__(self, db_path="inventory.db"):
         self.db_path = db_path
@@ -8,7 +9,6 @@ class DBBuilder:
         self.c = self.conn.cursor()
 
     def set_up_tables(self):
-
         # create product categories table
 
         self.c.execute(
@@ -17,7 +17,7 @@ class DBBuilder:
         category_name TEXT NOT NULL UNIQUE)"""
         )
 
-        #create products table
+        # create products table
         self.c.execute(
             """CREATE TABLE IF NOT EXISTS products(
             product_id INTEGER PRIMARY KEY,
@@ -48,7 +48,7 @@ class DBBuilder:
             ON UPDATE CASCADE,
             FOREIGN KEY (store_id) REFERENCES stores(store_id)
             ON UPDATE CASCADE,
-            UNIQUE (product_id, store_id))"""
+            PRIMARY KEY (product_id, store_id))"""
         )
 
         # create orders table
@@ -70,9 +70,9 @@ class DBBuilder:
             qty INTEGER NOT NULL,
             in_stock BOOLEAN NOT NULL,
             shipped BOOLEAN NOT NULL DEFAULT 0,
-            FOREIGN KEY (order_id) REFERENCE store(store_id)
+            FOREIGN KEY (order_id) REFERENCES store(store_id)
             ON UPDATE CASCADE,
-            FOREIGN KEY (product_id) REFERENCE products(product_id) ON UPDATE CASCADE,
+            FOREIGN KEY (product_id) REFERENCES products(product_id) ON UPDATE CASCADE,
             UNIQUE (order_id, product_id)
         )"""
         )
@@ -92,7 +92,7 @@ class DBBuilder:
             product_id INTEGER NOT NULL,
             qty INTEGER NOT NULL,
             received BOOLEAN NOT NULL DEFAULT 0,
-            FOREIGN KEY (restock_order_id) REFERENCE restock_orders(restock_order_id)"""
+            FOREIGN KEY (restock_order_id) REFERENCES restock_orders(restock_order_id) ON UPDATE CASCADE)"""
         )
 
         # create status table
