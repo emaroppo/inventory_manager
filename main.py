@@ -1,28 +1,46 @@
-import reader
-from db_manager import Inventory, setup_db
-import sqlite3
-import random
+import classes
+import csv
+from db_builder import DBBuilder
+from record import DBManager
+import os
 
-def example_restock(items_number=10):
-    # retrieve list of store ids fro db
-    conn = sqlite3.connect("inventory.db")
-    c = conn.cursor()
-    c.execute("SELECT store_id FROM stores")
-    store_ids = c.fetchall()
-
-    # retrieve list of product names from db
-    c.execute("SELECT product_name FROM products")
-    product_names = c.fetchall()
-
-    # write csv file with number of rows = items_numbers lines where each row is a store_id, product_, and a random qty (between 0 and 100)
-    with open("examples/restock.csv", "w") as f:
-        for i in range(items_number):
-            store_id = random.choice(store_ids)[0]
-            product_name = random.choice(product_names)[0]
-            qty = random.randint(0, 100)
-            f.write(f"{store_id},{product_name},{qty}" + "\n")
+# create example db if not there
 
 
-inv = Inventory()
-order = reader.order_from_csv("examples/restock.csv")
-inv.fulfill_order(order)
+if not os.path.isfile("inventory.db"):
+    db_manager = DBManager()
+    db_builder = DBBuilder()
+    db_builder.set_up_tables()
+    db_manager.fill_example_db()
+else:
+    db_manager = DBManager()
+
+# receive restock
+
+restock = []
+with open("examples/order.csv", "r") as f:
+    reader = csv.reader(f)
+    for row in reader:
+        restock.append(row)
+        
+    restock = [(classes.Product(product_id=i[0]), int(i[1])) for i in restock]
+
+store_id = 1
+store = classes.Store(store_id=store_id)
+restock_id=store.place_restock_order(restock)
+store.receive_restock(items=restock, restock_id=restock_id)
+
+
+# place order
+
+order = []
+with open("examples/order.csv", "r") as f:
+    reader = csv.reader(f)
+    for row in reader:
+        order.append(row)
+    order = [(classes.Product(product_id=int(i[0])), int(i[1])) for i in order]
+
+store_id = 1
+store = classes.Store(store_id=store_id)
+order_id=store.receive_order(order)
+store.fulfill_order(order_id)
