@@ -22,4 +22,11 @@ ___
 ___
 - ### <del>Goal 0: implement ERD/flowchart</del>
 - ### Goal 1: command line tool
+    - Function (User): Place order
+    - Function (User): Check order status
+    - Function (Staff): Add category to inventory
+    - Function (Staff): Add product to inventory
+    - Function (Staff): Place restock order
+    - Function (Staff): Confirm restock receipt
+    - Function (Staff): Fulfil order   
 - ### Goal 2: web interface  
