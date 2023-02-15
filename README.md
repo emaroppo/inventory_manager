@@ -24,5 +24,5 @@ ___
 - ### Goal 1: command line tool
     - User functions: <s>Place order,Check order status,View Cart</s>
         - Add review order screen before checkout
-    - Staff functions: Add category/product to inventory, place restock order, confirm restock receipt, fulfil order   
+    - Staff functions: <s>Add category/product to inventory</s>, place restock order, confirm restock receipt, fulfil order   
 - ### Goal 2: web interface  
