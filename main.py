@@ -1,7 +1,7 @@
 from db_builder import DBBuilder
 from record import DBManager
 from classes import Store
-import sys
+import argparse 
 import os
 
 # create example db if not there
@@ -18,9 +18,22 @@ else:
 # receive restock
 #run app from command line
 if __name__=='__main__':
-    user_type=sys.argv[1]
+    parser=argparse.ArgumentParser()
+    parser.add_argument('--mode', help='user or store')
+    parser.add_argument('--store_id', help='store id')
+    args=parser.parse_args()
+    user_type=args.mode
+    store_id=args.store_id
+    store=Store(store_id=store_id)
+
+
     if user_type=='user':
-        store_id=sys.argv[2]
-        store=Store(store_id=store_id)
-        store.receive_order(mode='manual')
+        print('1 - Place order')
+        print('2 - Check order status')
+        action = input("Select an option: ")
+        if action == '1':
+            store.receive_order(mode='manual')
+        elif action == '2':
+            order_id = input("Enter order ID: ")
+            store.check_order_status(order_id)
 

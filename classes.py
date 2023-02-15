@@ -54,6 +54,39 @@ class Store:
         self.store_id = store_id
         self.street_n, self.street_name, self.city, self.ZIP = self.db.get_store_address(store_id)
 
+    def view_cart(self, cart):
+        product_id = ''
+
+        while product_id != 'X':
+            cart_view = PrettyTable()
+            cart_view.field_names = ["Product ID", "Product", "Quantity", "Available"]
+            for item in cart:
+                cart_view.add_row((item[0].product_id, item[0].product_name, item[1], item[0].in_stock(self.store_id, item[1])))
+            print(cart_view)
+            print('Enter Product ID to remove item from cart, enter "X" to close cart')
+            product_id = input("Select a product: ")
+            try: 
+                cart = [i for i in cart if i[0].product_id != int(product_id)]
+            except:
+                print('Invalid input')
+        
+        cart= [i for i in cart if i[0] != product_id]
+        return cart
+
+    def check_order_status(self, order_id):
+        order= self.db.retrieve_order(order_id)
+        order_view = PrettyTable()
+        order_view.field_names = ["Order ID", "Store ID", "Status ID"]
+        order_view.add_row((order_id,) + order[0])
+        print(order_view)
+        order_items_view = PrettyTable()
+        order_items_view.field_names = ["Product ID", "Product", "Quantity", "Shipped"]
+        for item in order[1]:
+            order_items_view.add_row((item[0],)+(self.db.get_product_info(item[0])[0],)+(item[1], item[2]))
+        print(order_items_view)
+
+
+
     def receive_order(self, cart=[], mode='auto', items_per_page=10):
         
         input_command = ''
@@ -75,6 +108,10 @@ class Store:
                 
                 input_command = input("Select a category: ")
 
+                if input_command == 'Cart':
+                        self.view_cart(cart)
+                        input_command = input("Select a category: ")
+
                 try :
                     input_command = int(input_command)
                     filtered_catalog = [i for i in catalog if i[-1] == input_command]
@@ -95,6 +132,8 @@ class Store:
                     print('"P"/"N" to go to previous/next page; Enter "C" to go back to categories;') 
                     print('Enter "Checkout" to finish, Enter "Q" to quit')
                     input_command = input("Select a product: ")
+                    if input_command == 'Cart':
+                        self.view_cart(cart)
                     if input_command == 'P':
                         current_page -= 1
                     elif input_command == 'N':
@@ -105,7 +144,7 @@ class Store:
                         product_id = int(input_command)
                         product_qty = input("Enter quantity: ")
                         try:
-                            cart.append((product_id, int(product_qty)))
+                            cart.append((Product(product_id=product_id), int(product_qty)))
                         except ValueError:
                             print("Invalid input")
                     else:
