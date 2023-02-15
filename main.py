@@ -1,7 +1,7 @@
-import classes
-import csv
 from db_builder import DBBuilder
 from record import DBManager
+from classes import Store
+import sys
 import os
 
 # create example db if not there
@@ -16,31 +16,11 @@ else:
     db_manager = DBManager()
 
 # receive restock
+#run app from command line
+if __name__=='__main__':
+    user_type=sys.argv[1]
+    if user_type=='user':
+        store_id=sys.argv[2]
+        store=Store(store_id=store_id)
+        store.receive_order(mode='manual')
 
-restock = []
-with open("examples/order.csv", "r") as f:
-    reader = csv.reader(f)
-    for row in reader:
-        restock.append(row)
-        
-    restock = [(classes.Product(product_id=i[0]), int(i[1])) for i in restock]
-
-store_id = 1
-store = classes.Store(store_id=store_id)
-restock_id=store.place_restock_order(restock)
-store.receive_restock(items=restock, restock_id=restock_id)
-
-
-# place order
-
-order = []
-with open("examples/order.csv", "r") as f:
-    reader = csv.reader(f)
-    for row in reader:
-        order.append(row)
-    order = [(classes.Product(product_id=int(i[0])), int(i[1])) for i in order]
-
-store_id = 1
-store = classes.Store(store_id=store_id)
-order_id=store.receive_order(order)
-store.fulfill_order(order_id)
