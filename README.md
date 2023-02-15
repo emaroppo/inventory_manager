@@ -22,7 +22,7 @@ ___
 ___
 - ### <del>Goal 0: implement ERD/flowchart</del>
 - ### Goal 1: command line tool
-    - User functions: <s>Place order<s>,Check order status,View Cart
+    - User functions: <s>Place order<s>,Check order status,<s>View Cart<s>
         - Add review order screen before checkout
     - Staff functions: Add category/product to inventory, place restock order, confirm restock receipt, fulfil order   
 - ### Goal 2: web interface  
