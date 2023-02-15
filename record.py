@@ -70,6 +70,10 @@ class DBManager:
         )
         return self.c.fetchone()[0]
     
+    def get_categories(self):
+        self.c.execute("SELECT category_id, category_name FROM categories")
+        return self.c.fetchall()
+    
     def add_status(self, status_id, status):
         self.c.execute(
             """INSERT OR IGNORE INTO status(status_id,status)
@@ -163,7 +167,25 @@ class DBManager:
         else :
             self.c.execute("""UPDATE restocks SET status_id = 0 WHERE restock_order_id = ?""", (restock_id,))
             self.conn.commit()
+
+
+    def show_categories(self):
+        self.c.execute("""SELECT * FROM categories""")
+        categories = self.c.fetchall()
+        return categories
             
+
+    def show_catalog(self, store_id):
+        self.c.execute("""SELECT products.product_id, products.product_name, stock.qty, products.category_id 
+        FROM products LEFT JOIN stock ON stock.product_id = products.product_id WHERE store_id = ?""", (store_id,))
+        catalog = self.c.fetchall()
+        return catalog
+    
+    def show_store_inventory(self, store_id):
+        self.c.execute("""SELECT product_id, qty FROM stock WHERE store_id = ?""", (store_id,))
+        inventory = self.c.fetchall()
+        return inventory
+
 
     
     def fill_example_db(self, stores_csv='examples/stores.csv', products_csv='examples/products.csv', categories_csv='examples/categories.csv', statuses_csv='examples/statuses.csv'):

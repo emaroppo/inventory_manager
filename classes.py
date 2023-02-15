@@ -1,5 +1,7 @@
 import csv
 from record import DBManager
+from prettytable import PrettyTable
+import re
 
 class Product:
     def __init__(self, product_id=None):
@@ -52,8 +54,71 @@ class Store:
         self.store_id = store_id
         self.street_n, self.street_name, self.city, self.ZIP = self.db.get_store_address(store_id)
 
-    def receive_order(self, order):
-        order_id = self.db.add_purchase(self.store_id, order)
+    def receive_order(self, cart=[], mode='auto', items_per_page=10):
+        
+        input_command = ''
+
+        
+        if mode == 'manual':
+            #load categories, catalog, stock
+            categories = self.db.get_categories()
+            catalog = self.db.show_catalog(self.store_id)
+            #show categories
+            
+            while input_command != 'Checkout' and input_command != 'Q':
+                categories_view = PrettyTable()
+                categories_view.field_names = ["Category ID", "Category"]
+                for category in categories:
+                    categories_view.add_row(category)
+                print(categories_view)
+                print(''' Enter "Checkout" to finish, Enter "Q" to quit''')
+                
+                input_command = input("Select a category: ")
+
+                try :
+                    input_command = int(input_command)
+                    filtered_catalog = [i for i in catalog if i[-1] == input_command]
+                    catalog_pages = [filtered_catalog[i:i+items_per_page] for i in range(0, len(filtered_catalog), items_per_page)]
+                    current_page = 0
+                except ValueError:
+                    pass
+                #show product_id, products & quantity in stock for selected category
+                #divide results in pages
+                while input_command != 'Q' and input_command != 'Checkout' and input_command != 'C':
+                    #show page
+                    catalog_view = PrettyTable()
+                    catalog_view.field_names = ["Product ID", "Product", "Stock"]
+                    for i in catalog_pages[current_page]:  
+                        catalog_view.add_row(i[:-1])
+                    print(catalog_view)
+                    print(f'{current_page+1}/{len(catalog_pages)}')
+                    print('"P"/"N" to go to previous/next page; Enter "C" to go back to categories;') 
+                    print('Enter "Checkout" to finish, Enter "Q" to quit')
+                    input_command = input("Select a product: ")
+                    if input_command == 'P':
+                        current_page -= 1
+                    elif input_command == 'N':
+                        current_page += 1
+                    elif input_command in ('C', 'Q', 'Checkout'):
+                        break
+                    elif input_command in [str(i[0]) for i in catalog_pages[current_page]]:
+                        product_id = int(input_command)
+                        product_qty = input("Enter quantity: ")
+                        try:
+                            cart.append((product_id, int(product_qty)))
+                        except ValueError:
+                            print("Invalid input")
+                    else:
+                        print("Invalid input")
+                        input_command = ''
+        if input_command !='Q':
+            cart = [(Product(product_id=i[0]), i[1]) for i in cart]
+            order_id = self.db.add_purchase(self.store_id, cart)
+        else : 
+            return
+        if input_command == 'Checkout':
+            print(f'Order ID: {order_id}')
+
         return order_id
 
     def fulfill_order(self, order_id):
@@ -94,6 +159,4 @@ class Customer:
         self.customer_id = None
     
     def place_order(self, store_id, items):
-        items = [(Product(product_id=i[0]), i[1]) for i in items]
         return store_id, items
-        
