@@ -54,6 +54,20 @@ class Store:
         self.store_id = store_id
         self.street_n, self.street_name, self.city, self.ZIP = self.db.get_store_address(store_id)
 
+    #Order
+
+    def check_order_status(self, order_id):
+        order= self.db.retrieve_order(order_id)
+        order_view = PrettyTable()
+        order_view.field_names = ["Order ID", "Store ID", "Status ID"]
+        order_view.add_row((order_id,) + order[0])
+        print(order_view)
+        order_items_view = PrettyTable()
+        order_items_view.field_names = ["Product ID", "Product", "Quantity", "Shipped"]
+        for item in order[1]:
+            order_items_view.add_row((item[0],)+(self.db.get_product_info(item[0])[0],)+(item[1], item[2]))
+        print(order_items_view)
+
     def view_cart(self, cart):
         product_id = ''
 
@@ -72,20 +86,6 @@ class Store:
         
         cart= [i for i in cart if i[0] != product_id]
         return cart
-
-    def check_order_status(self, order_id):
-        order= self.db.retrieve_order(order_id)
-        order_view = PrettyTable()
-        order_view.field_names = ["Order ID", "Store ID", "Status ID"]
-        order_view.add_row((order_id,) + order[0])
-        print(order_view)
-        order_items_view = PrettyTable()
-        order_items_view.field_names = ["Product ID", "Product", "Quantity", "Shipped"]
-        for item in order[1]:
-            order_items_view.add_row((item[0],)+(self.db.get_product_info(item[0])[0],)+(item[1], item[2]))
-        print(order_items_view)
-
-
 
     def receive_order(self, cart=[], mode='auto', items_per_page=10):
         
@@ -175,7 +175,7 @@ class Store:
             print("Not enough items available for order")
             return
     
-
+    #Restock
     def place_restock_order(self, items):
         restock_id = self.db.add_restock(self.store_id, items)
         return restock_id
@@ -191,6 +191,30 @@ class Store:
         order = self.db.get_order(order)
         order.status = "received"
         self.db.update_order(order)
+    
+    #Update Catalog
+    def add_category(self, category_name=''):
+        if not category_name:
+            category_name = input("Enter category name: ")
+
+        category_id=self.db.add_category(category_name)
+        return category_id
+    
+    def add_product(self, product_name='', category_id=None):
+        if not product_name:
+            product_name = input("Enter product name: ")
+        if not category_id:
+            category= input("Enter category: ")
+        print(f'Add: {product_name} ({category}), confirm? (Y/N)')
+        check = input()
+        if check == 'Y':
+            try:
+                category_id = self.db.get_category_id(category)
+            except:
+                category_id=self.add_category(category)
+            
+        self.db.add_product(product_name, category_id)
+    
 
 class Customer:
     def __init__(self) -> None:
