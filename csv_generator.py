@@ -1,12 +1,9 @@
 import random
-import sqlite3
-import csv
-from record import DBManager
+from backend.classes.db import db
 
 def generate_csv(csv_type, length): #type=order or restock
 
-    db=DBManager()
-    items_list=db.c.execute('SELECT product_id FROM products').fetchall()
+    items_list=db.execute('SELECT product_id FROM products').fetchall()
     items_list=[i[0] for i in items_list]
     
     order_items=random.sample(items_list, length)

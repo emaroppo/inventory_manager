@@ -1,10 +1,13 @@
-import sqlite3
+import sqlite3 as sql
 import csv
+
+conn = sql.connect('inventory.db')
+db = conn.cursor()
 
 class DBManager:
     def __init__(self, db_path="inventory.db"):
         self.db_path = db_path
-        self.conn = sqlite3.connect(db_path)
+        self.conn = sql.connect(db_path)
         self.c = self.conn.cursor()
 
     def add_store(self, street_n, street_name, city, zip):
@@ -104,7 +107,7 @@ class DBManager:
         try:
             #remove item from stock
             self.c.execute("""UPDATE stock SET qty = qty - ? WHERE product_id = ? AND store_id = ?""", (qty, product_id, store_id))
-        except sqlite3.IntegrityError:
+        except sql.IntegrityError:
             print("Not enough items in stock")
         
         #mark item as shipped

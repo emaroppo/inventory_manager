@@ -1,6 +1,4 @@
 import sqlite3
-import classes
-
 
 class DBBuilder:
     def __init__(self, db_path="inventory.db"):

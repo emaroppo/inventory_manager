@@ -1,6 +1,6 @@
 from db_builder import DBBuilder
-from record import DBManager
-from classes import Store
+from backend.classes.db import DBManager
+from backend.classes.store import Store
 import argparse 
 import os
 
@@ -12,8 +12,7 @@ if not os.path.isfile("inventory.db"):
     db_builder = DBBuilder()
     db_builder.set_up_tables()
     db_manager.fill_example_db()
-else:
-    db_manager = DBManager()
+
 
 # receive restock
 #run app from command line
