@@ -6,3 +6,4 @@ __pycache__/
 .vscode/
 .venv/
 test.py
+frontend/node_modules/*
