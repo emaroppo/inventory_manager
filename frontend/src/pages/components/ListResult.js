@@ -3,14 +3,11 @@ import styles from "../css/ListResult.module.css";
 
 function ListResult({ result }) {
     const imagePath = process.env.PUBLIC_URL + '/' + result.result_image;
-    const leftLines = [
-        result.result_name,
-        result.result_price
-    ];
-    const rightLines = [
-        // Add any other store-specific details you want to display on the right side here.
-    ];
+    const leftLines = result.leftLines;
+    const rightLines = result.rightLines;
+    // Add any other store-specific details you want to display on the right side here.
 
+    console.log(result);
     return (
         <div className={styles.listResult}>
             <img src={imagePath} alt={result.result_name} className={styles.resultImg} />

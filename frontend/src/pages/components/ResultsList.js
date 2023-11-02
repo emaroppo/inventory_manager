@@ -2,6 +2,8 @@ import React from 'react';
 import ListResult from "./ListResult";
 
 function ResultsList({ results, currentPage }) {
+    console.log(results);
+
     return (
         <div>
             {
@@ -12,5 +14,4 @@ function ResultsList({ results, currentPage }) {
         </div>
     );
 }
-
 export default ResultsList;

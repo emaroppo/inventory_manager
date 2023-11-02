@@ -8,7 +8,7 @@ import StoreLocator from './pages/StoreLocator';
 import "./index.css";
 import AdminPanel from './pages/admin/AdminPanel';
 
-
+import Cart from './pages/Cart';
 
 export default function App() {
 
@@ -21,6 +21,7 @@ export default function App() {
           <Route path="shop/:category_name" element={<Shop />} />
           <Route path="/locate/store" element={<StoreLocator />} />
           <Route path="/admin" element={<AdminPanel />} />
+          <Route path="/cart" element={<Cart />} />
         </Route>
         <Route path="*" element={<h1>Not Found</h1>} />
       </Routes>

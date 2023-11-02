@@ -5,6 +5,7 @@ from classes.product import Product
 from classes.category import Category
 from classes.store import Store
 from classes.order import CustomerOrder
+from classes.cart import Cart
 from classes.db import db
 import os
 from dotenv import load_dotenv
@@ -94,3 +95,29 @@ async def show_order(order_id):
 async def add_order(store_id):
     db.execute("""INSERT INTO orders (store_id) VALUES (?)""", (store_id,))
     return db.lastrowid
+
+
+@app.post("/cart/add_item")
+async def add_to_cart(request: Request):
+    cart = Cart.from_user_id(1)
+    data = await request.json()
+    product_id = data["product_id"]
+    print(product_id)
+    qty = data["qty"]
+    cart.add_item(product_id, qty)
+    cart = cart.to_json()
+    print(cart)
+    return cart
+
+
+@app.post("/cart/checkout")
+async def checkout_cart():
+    cart = Cart.from_user_id(1)
+    order = cart.checkout()
+    return order.to_json()
+
+
+@app.get("/cart")
+async def show_cart():
+    cart = Cart.from_user_id(1)
+    return cart.to_json()

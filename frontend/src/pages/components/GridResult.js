@@ -1,5 +1,7 @@
-function GridResult(result) {
+import React from 'react';
+import AddToCart from './AddToCart';  // Adjust the path based on your file structure.
 
+function GridResult(result) {
     result = result.result;
 
     return (
@@ -7,8 +9,8 @@ function GridResult(result) {
             <img src={process.env.PUBLIC_URL + '/' + result.result_image} alt={result.result_name} style={{ width: '75%' }} /> <br />
             {result.result_name} <br />
             Price: {result.result_price}$ <br />
-            Add to cart
 
+            <AddToCart product={result} />
         </div>
     );
 }
