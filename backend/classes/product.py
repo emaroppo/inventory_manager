@@ -48,13 +48,17 @@ class Product:
             results = [result.to_json() for result in results]
         return results
 
-    def __init__(self, product_id, product_name, category_id):
+    def __init__(
+        self, product_id, product_name, product_price, product_image, category_id
+    ):
         self.product_id = product_id
         self.product_name = product_name
+        self.product_price = product_price
+        self.product_image = product_image
         self.category_id = category_id
 
     def in_stock(self, store_id, order_qty):
-        self.db.c.execute(
+        self.db.execute(
             """SELECT qty FROM stock WHERE product_id = ? AND store_id= ?""",
             (self.product_id, store_id),
         )
@@ -70,5 +74,77 @@ class Product:
         return {
             "product_id": self.product_id,
             "product_name": self.product_name,
+            "product_price": self.product_price,
+            "product_image": self.product_image,
             "category_id": self.category_id,
         }
+
+    def save(self):
+        sql_query = (
+            """UPDATE products SET product_name=?, category_id=? WHERE product_id=?"""
+        )
+        self.db.execute(
+            sql_query, (self.product_name, self.category_id, self.product_id)
+        )
+
+
+class InventoryItem(Product):
+    def __init__(self, product_id, product_name, category_id, qty, store_id):
+        super().__init__(product_id, product_name, category_id)
+        self.qty = qty
+        self.store_id = store_id
+
+    def ship(self, order: "OrderItem"):
+        if order.qty < self.qty:
+            self.qty -= order.qty
+            self.save()
+            order.shipping_status = 1
+            order.save()
+
+            return True
+
+        else:
+            raise ValueError("Not enough stock")
+
+    def to_json(self):
+        out_json = super().to_json()
+        out_json["qty"] = self.qty
+        return out_json
+
+    def save(self):
+        sql_query = """UPDATE stock SET qty=? WHERE product_id=? AND store_id=?"""
+        self.db.execute(sql_query, (self.qty, self.product_id, self.store_id))
+        self.db.conn.commit()
+
+
+class OrderItem(InventoryItem):
+    @classmethod
+    def from_product(cls, product: Product, qty, order_id, shipping_status):
+        return cls(
+            product.product_id,
+            product.product_name,
+            product.category_id,
+            qty,
+            order_id,
+            shipping_status,
+        )
+
+    def __init__(
+        self, product_id, product_name, category_id, qty, order_id, shipping_status
+    ):
+        super().__init__(product_id, product_name, category_id, qty)
+        self.order_id = order_id
+        self.shipping_status = shipping_status
+
+    def to_json(self):
+        out_json = super().to_json()
+        out_json["order_id"] = self.order_id
+        out_json["shipping_status"] = self.shipping_status
+        return out_json
+
+    def save(self):
+        sql_query = """UPDATE order_details SET shipping_status=? WHERE product_id=? AND order_id=?"""
+        self.db.execute(
+            sql_query, (self.shipping_status, self.product_id, self.order_id)
+        )
+        self.db.conn.commit()

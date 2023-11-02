@@ -1,5 +1,6 @@
 import sqlite3
 
+
 class DBBuilder:
     def __init__(self, db_path="inventory.db"):
         self.db_path = db_path
@@ -20,6 +21,8 @@ class DBBuilder:
             """CREATE TABLE IF NOT EXISTS products(
             product_id INTEGER PRIMARY KEY,
             product_name TEXT NOT NULL,
+            product_price REAL NOT NULL DEFAULT 0,
+            product_image TEXT,
             category_id INTEGER NOT NULL,
             FOREIGN KEY (category_id) REFERENCES categories(category_id)
             ON UPDATE CASCADE)"""

@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import CategoryList from './components/CategoryList';
-import ProductGrid from './components/ProductGrid';
+import ResultsGrid from './components/ResultsGrid';
 import Pagination from './components/Pagination';
 
 import { useParams } from 'react-router-dom';
+
+const API_ADDRESS = process.env.REACT_APP_API_ADDRESS;
+console.log(API_ADDRESS);
 
 function Shop() {
     const [categories, setCategories] = useState([]);
@@ -13,8 +16,8 @@ function Shop() {
 
     useEffect(() => {
         async function fetchData() {
-            const categoriesData = await (await fetch('http://localhost:8000/categories')).json();
-            const productsData = await (await fetch('http://localhost:8000/products')).json();
+            const categoriesData = await (await fetch(`${API_ADDRESS}/categories`)).json();
+            const productsData = await (await fetch(`${API_ADDRESS}/products`)).json();
             setCategories(categoriesData);
             setProducts(productsData);
             setCurrentPage(1);
@@ -28,18 +31,23 @@ function Shop() {
         filteredProducts = products;
         hasNextPage = filteredProducts.length > currentPage * 16;
     } else {
-        const category = categories.find(cat => cat[1] === category_name);
-        const categoryId = category ? category[0] : null;
+        const category = categories.find(cat => cat.category_name === category_name);
+        const categoryId = category ? category.category_id : null;
         filteredProducts = products.filter(product => product.category_id === categoryId);
         hasNextPage = filteredProducts.length > currentPage * 16;
+
+        console.log(filteredProducts);
     }
+
+    filteredProducts = filteredProducts.map(product => ({ 'result_id': product.product_id, 'result_image': product.product_image, 'result_name': product.product_name, 'result_price': product.product_price }))
+
     return (
         <div style={{ display: 'flex' }}>
             <div style={{ flex: 1, marginRight: '20px' }}>
                 <CategoryList categories={categories} />
             </div>
             <div style={{ flex: 3 }}>
-                <ProductGrid key={0} products={filteredProducts} currentPage={currentPage} />
+                <ResultsGrid key={0} results={filteredProducts} currentPage={currentPage} />
                 <Pagination key={1} currentPage={currentPage} setCurrentPage={setCurrentPage} hasNextPage={hasNextPage} />
             </div>
         </div>

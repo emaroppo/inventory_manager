@@ -9,7 +9,7 @@ function Home() {
                 </div>
                 <div className="Quick-links" style={{ position: 'absolute', bottom: 0, width: '100%', display: 'flex', justifyContent: 'space-evenly', alignItems: 'center' }}>
                     <Link to="shop">Shop</Link>
-                    <Link to="about">Store Locator</Link>
+                    <Link to="locate/store">Store Locator</Link>
                 </div>
             </div>
         </>

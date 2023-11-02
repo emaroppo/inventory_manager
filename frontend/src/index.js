@@ -4,7 +4,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./pages/Layout";
 import Home from "./pages/Home";
 import Shop from "./pages/Shop";
+import StoreLocator from './pages/StoreLocator';
 import "./index.css";
+import AdminPanel from './pages/admin/AdminPanel';
 
 
 
@@ -17,6 +19,8 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="shop" element={<Shop />} />
           <Route path="shop/:category_name" element={<Shop />} />
+          <Route path="/locate/store" element={<StoreLocator />} />
+          <Route path="/admin" element={<AdminPanel />} />
         </Route>
         <Route path="*" element={<h1>Not Found</h1>} />
       </Routes>

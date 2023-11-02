@@ -1,38 +1,64 @@
-from .db import db
-from .product import Product
+from .db import db, conn
+from .product import OrderItem, Product
+
 
 class Order:
     db = db
+    conn = conn
+
+    def __init__(self, order_id, items=list()):
+        self.order_id = order_id
+        self.items = items
+
+
+class CustomerOrder(Order):
+    @classmethod
+    def from_id(cls, order_id):
+        args = cls.db.execute(
+            """SELECT * FROM customer_orders WHERE order_id=?""", (order_id,)
+        ).fetchone()
+        order = cls(*args)
+        return order
 
     @classmethod
-    def add(cls, store_id, order_items):
+    def add(cls, user_id, order_items=list()):
         cls.db.execute(
-            "INSERT INTO orders (store_id) VALUES (?)",
-            (store_id,),
+            "INSERT INTO customer_orders (user_id) VALUES (?)",
+            (user_id,),
         )
-        order_id = cls.db.lastrowid
-        for item in order_items:
-            cls.db.execute(
-                "INSERT INTO order_items (order_id, product_id, qty, shipped) VALUES (?, ?, ?, ?)",
-                (order_id, item[0].product_id, item[1], item[2]),
-            )
-        cls.db.commit()
-        return order_id
-    def __init__(self, order_id):
-        self.order_id = order_id
-    
-class Restock(Order):
-    def __init__(self, store_id, items):
-        super().__init__(store_id)
-        self.products=items
 
-class Purchase(Order):
-    def __init__(self, order_id, partial=True):
-        super().__init__(order_id)
-        order, order_items = self.db.retrieve_order(order_id)
+        cls.conn.commit()
+        return cls.from_id(cls.db.lastrowid, order_items)
 
-        self.store_id, self.status_id= order
-        self.items = [(Product(product_id=i[0]),i[1], i[2]) for i in order_items]
-        self.available_items = [i for i in self.items if i[0].in_stock(self.store_id, i[1])]
-        self.shippable_items = [i for i in self.available_items if not i[2]]
-        self.partial = partial
+    @classmethod
+    def search(cls, user_id):
+        results = cls.db.execute(
+            """SELECT * FROM customer_orders WHERE user_id=?""", (user_id,)
+        ).fetchall()
+        results = [cls(*result) for result in results]
+        return results
+
+    def __init__(self, order_id, user_id, items=list()):
+        super().__init__(order_id, items)
+        self.user_id = user_id
+
+    def add_items(self, items):
+        items = [
+            OrderItem.from_product(product, qty, order_id=self.order_id)
+            for product, qty in items
+        ]
+        self.items += items
+
+
+class RestockOrder(Order):
+    @classmethod
+    def from_id(cls, order_id):
+        args = cls.db.execute(
+            """SELECT * FROM restock_orders WHERE restock_order_id=?""", (order_id,)
+        ).fetchone()
+        order = cls(*args)
+        return order
+
+    def __init__(self, order_id, store_id, items=list()):
+        super().__init__(order_id, items)
+        self.store_id = store_id

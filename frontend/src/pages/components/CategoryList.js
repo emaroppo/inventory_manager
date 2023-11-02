@@ -12,16 +12,16 @@ function CategoryList({ categories }) {
             </Link>
             {categories.map(category => (
                 <Link
-                    key={category[0]}
-                    to={`/shop/${category[1]}`}
+                    key={category.category_id}
+                    to={`/shop/${category.category_name}`}
                     style={{
                         display: 'block',
                         marginBottom: '10px',
-                        fontWeight: category[1] === category_name ? 'bold' : 'normal'
+                        fontWeight: category.category_name === category_name ? 'bold' : 'normal'
                     }}
-                    onClick={() => navigate(`/shop/${category[1]}`)}
+                    onClick={() => navigate(`/shop/${category.category_name}`)}
                 >
-                    {category[1]}
+                    {category.category_name}
                 </Link>
             ))}
         </div>

@@ -1,13 +1,19 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.requests import Request
 from classes.product import Product
+from classes.category import Category
+from classes.store import Store
+from classes.order import CustomerOrder
 from classes.db import db
+import os
+from dotenv import load_dotenv
 
 app = FastAPI()
-origins = [
-    "http://localhost:3000",  # adjust this to match the domain you want to allow
-    # add more origins if needed
-]
+load_dotenv("../.env")
+origins = os.getenv("ALLOWED_ORIGINS").split(",")
+print(origins)
+print(type(origins))
 
 app.add_middleware(
     CORSMiddleware,
@@ -30,71 +36,58 @@ async def show_products(page=0, per_page=0, store_id=None, category_id=None):
 
 @app.get("/products/{product_id}")
 async def show_product(product_id):
-    return db.execute(
-        """SELECT * FROM products WHERE product_id=?""", (product_id,)
-    ).fetchone()
+    return Product.from_id(product_id, to_json=True)
 
 
 @app.get("/products/add_product")
 async def add_product(product_name, category_id):
-    db.execute(
-        """INSERT INTO products (product_name, category_id) VALUES (?,?)""",
-        (product_name, category_id),
-    )
-    return db.lastrowid
+    product = Product.add(product_name, category_id)
+    return product.to_json()
 
 
 @app.get("/categories")
 async def show_categories():
-    return db.execute("""SELECT * FROM categories""").fetchall()
+    return Category.search(to_json=True)
 
 
-@app.get("/categories/{category_id}")
-async def show_category(category_id):
-    return db.execute(
-        """SELECT * FROM categories WHERE category_id=?""", (category_id,)
-    ).fetchone()
-
-
-@app.get("/categories/add_category")
-async def add_category(category_name):
-    db.execute(
-        """INSERT INTO categories (category_name) VALUES (?)""", (category_name,)
-    )
-    return db.lastrowid
+@app.post("/categories/add_category")
+async def add_category(request: Request):
+    category_name = await request.json()
+    category_name = category_name["category_name"]
+    category = Category.add(category_name)
+    return category.to_json()
 
 
 @app.get("/stores")
 async def show_stores():
-    return db.execute("""SELECT * FROM stores""").fetchall()
+    return Store.search(to_json=True)
+
+
+@app.get("/stores/find")
+async def find_stores(zip_query):
+    stores = Store.search(zip_query, to_json=True)
+    return stores
 
 
 @app.get("/stores/{store_id}")
 async def show_store(store_id):
-    return db.execute(
-        """SELECT * FROM stores WHERE store_id=?""", (store_id,)
-    ).fetchone()
+    return Store.from_id(store_id, to_json=True)
 
 
 @app.get("/stores/add_store")
-async def add_store(street_n, street_name, city, ZIP):
-    db.execute(
-        """INSERT INTO stores (street_n, street_name, city, ZIP) VALUES (?, ?, ?, ?)""",
-        (street_n, street_name, city, ZIP),
-    )
-    return db.lastrowid
+async def add_store(street_n, street_name, city, ZIP, store_image):
+    store = Store.add(street_n, street_name, city, ZIP, store_image)
+    return store.to_json()
 
 
-@app.get("/orders")
-async def show_orders():
-    return db.execute("""SELECT * FROM orders""").fetchall()
+@app.post("/user/orders")
+async def show_orders(user_id):
+    return CustomerOrder.search(user_id=user_id, to_json=True)
 
 
-@app.get("/orders/{order_id}")
+@app.get("/user/orders/{order_id}")
 async def show_order(order_id):
-    return db.execute(
-        """SELECT * FROM orders WHERE order_id=?""", (order_id,)
-    ).fetchone()
+    return CustomerOrder.from_id(order_id, to_json=True)
 
 
 @app.get("/orders/add_order")
