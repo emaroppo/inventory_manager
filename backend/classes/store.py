@@ -52,6 +52,7 @@ class Store:
             "street_name": self.street_name,
             "city": self.city,
             "ZIP": self.ZIP,
+            "store_image": self.store_image,
         }
 
     def __init__(self, store_id, street_n, street_name, city, ZIP, store_image):
@@ -191,7 +192,7 @@ class Store:
         return order_id
 
     def fulfill_order(self, order_id):
-        order = Purchase(order_id=order_id)
+        order = CustomerOrder(order_id=order_id)
 
         if not order.shippable_items:
             print("No items available for order")
@@ -223,7 +224,7 @@ class Store:
         self.db.update_restock_status(restock_id=restock_id)
 
     def confirm_receipt(self, order_id, item_id):
-        order = Purchase(order_id=order_id)
+        order = CustomerOrder(order_id=order_id)
         order = self.db.get_order(order)
         order.status = "received"
         self.db.update_order(order)

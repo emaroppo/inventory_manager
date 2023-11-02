@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import ResultsList from './components/ResultsList';
 
-const API_ADDRESS = process.env.API_ADDRESS;
+const API_ADDRESS = process.env.REACT_APP_API_ADDRESS;
+
 
 function StoreLocator() {
     const [zipQuery, setZipQuery] = useState('');
@@ -22,8 +23,10 @@ function StoreLocator() {
                     result_id: store.store_id,
                     result_name: store.street_name,
                     result_image: "path_to_default_store_image.jpg", // Default image or use a relevant one
-                    result_price: `${store.street_n}, ${store.city} - ${store.ZIP}`
-                }));
+                    result_address: `${store.street_n}, ${store.city} - ${store.ZIP}`
+                }))
+                    .map(result => ({ result_id: result.result_id, result_image: result.result_image, leftLines: [result.result_name], rightLines: [result.result_address] }))
+                    ;
 
                 setStores(transformedData);
             } else {
