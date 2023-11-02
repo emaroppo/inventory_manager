@@ -7,13 +7,15 @@ function Cart() {
     const [cartItems, setCartItems] = useState([]);
     const [resultsList, setResultsList] = useState([]);
 
+    // This function will fetch the updated cart data
+    const fetchCartData = async () => {
+        const response = await fetch(`${API_ADDRESS}/cart`);
+        const data = await response.json();
+        setCartItems(data);  // schedules an update to cartItems
+    };
+
     useEffect(() => {
-        async function fetchData() {
-            const response = await fetch(`${API_ADDRESS}/cart`);
-            const data = await response.json();
-            setCartItems(data);  // schedules an update to cartItems
-        }
-        fetchData();
+        fetchCartData();
     }, []);
 
     useEffect(() => {
@@ -31,11 +33,17 @@ function Cart() {
                 'rightLines': [result.result_price, result.result_qty],
             }));
 
-            const newResultsList = <ResultsList key={1000} results={results} currentPage={1} />;
+            const newResultsList = (
+                <ResultsList
+                    key={1000}
+                    results={results}
+                    currentPage={1}
+                    onItemRemoved={fetchCartData} // Pass the fetch function as a prop
+                />
+            );
             setResultsList(newResultsList);
         }
     }, [cartItems]);
-
 
     return (<>
         {resultsList}
@@ -43,3 +51,4 @@ function Cart() {
 }
 
 export default Cart;
+

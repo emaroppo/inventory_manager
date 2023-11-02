@@ -13,8 +13,7 @@ from dotenv import load_dotenv
 app = FastAPI()
 load_dotenv("../.env")
 origins = os.getenv("ALLOWED_ORIGINS").split(",")
-print(origins)
-print(type(origins))
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -67,6 +66,7 @@ async def show_stores():
 @app.get("/stores/find")
 async def find_stores(zip_query):
     stores = Store.search(zip_query, to_json=True)
+    print(stores)
     return stores
 
 
@@ -105,6 +105,19 @@ async def add_to_cart(request: Request):
     print(product_id)
     qty = data["qty"]
     cart.add_item(product_id, qty)
+    cart = cart.to_json()
+    print(cart)
+    return cart
+
+
+@app.post("/cart/remove_item")
+async def add_to_cart(request: Request):
+    cart = Cart.from_user_id(1)
+    data = await request.json()
+    product_id = data["product_id"]
+    print(product_id)
+    qty = data["qty"]
+    cart.remove_item(product_id, qty)
     cart = cart.to_json()
     print(cart)
     return cart
