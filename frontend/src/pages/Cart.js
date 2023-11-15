@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ResultsList from './components/ResultsList';
+import CheckoutButton from './components/CheckoutButton';
 
 const API_ADDRESS = process.env.REACT_APP_API_ADDRESS;
 
@@ -44,9 +45,14 @@ function Cart() {
             setResultsList(newResultsList);
         }
     }, [cartItems]);
+    const handleCheckout = (order) => {
+        console.log(order); // log the order data
+        // Here you can handle the order data, for example, by showing a success message
+    };
 
     return (<>
         {resultsList}
+        <CheckoutButton onCheckout={handleCheckout} />
     </>);
 }
 
