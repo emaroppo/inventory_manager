@@ -28,7 +28,7 @@ class CustomerOrder(Order):
         )
 
         cls.conn.commit()
-        return cls.from_id(cls.db.lastrowid, order_items)
+        return cls.from_id(cls.db.lastrowid)
 
     @classmethod
     def search(cls, user_id):
@@ -48,6 +48,12 @@ class CustomerOrder(Order):
             for product, qty in items
         ]
         self.items += items
+        #insert into order_items
+        for item in items:
+            self.db.execute(
+                """INSERT INTO order_items (order_id, product_id, qty) VALUES (?, ?, ?)""",
+                (self.order_id, item.product.product_id, item.qty),
+            )   
 
 
 class RestockOrder(Order):
