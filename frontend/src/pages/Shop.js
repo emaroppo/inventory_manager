@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import CategoryList from './components/CategoryList';
 import ResultsGrid from './components/ResultsGrid';
 import Pagination from './components/Pagination';
-
+import styles from './css/Shop.module.css'; 
 import { useParams } from 'react-router-dom';
 
 const API_ADDRESS = process.env.REACT_APP_API_ADDRESS;
@@ -41,12 +41,13 @@ function Shop() {
 
     filteredProducts = filteredProducts.map(product => ({ 'result_id': product.product_id, 'result_image': product.product_image, 'result_name': product.product_name, 'result_price': product.product_price }))
 
+
     return (
-        <div style={{ display: 'flex' }}>
-            <div style={{ flex: 1, marginRight: '20px' }}>
+        <div className={styles.shopContainer}>
+            <div className={styles.categoryList}>
                 <CategoryList categories={categories} />
             </div>
-            <div style={{ flex: 3 }}>
+            <div className={styles.resultsSection}>
                 <ResultsGrid key={0} results={filteredProducts} currentPage={currentPage} />
                 <Pagination key={1} currentPage={currentPage} setCurrentPage={setCurrentPage} hasNextPage={hasNextPage} />
             </div>

@@ -1,15 +1,17 @@
 import React from 'react';
-import AddToCart from './AddToCart';  // Adjust the path based on your file structure.
+import AddToCart from './AddToCart'; // Adjust the path based on your file structure
+import styles from './css/GridResult.module.css'; // Import CSS module
 
-function GridResult(result) {
-    result = result.result;
-
+function GridResult({ result }) {
     return (
-        <div key={result.result_id} style={{ border: '1px solid #ccc', padding: '10px' }}>
-            <img src={process.env.PUBLIC_URL + '/' + result.result_image} alt={result.result_name} style={{ width: '75%' }} /> <br />
-            {result.result_name} <br />
-            Price: {result.result_price}$ <br />
-
+        <div className={styles.gridResultCard}>
+            <img 
+                src={process.env.PUBLIC_URL + '/' + result.result_image} 
+                alt={result.result_name} 
+                className={styles.productImage} 
+            />
+            <div className={styles.productName}>{result.result_name}</div>
+            <div className={styles.productPrice}>Price: {result.result_price}$</div>
             <AddToCart product={result} />
         </div>
     );

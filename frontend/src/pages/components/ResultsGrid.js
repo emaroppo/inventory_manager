@@ -1,14 +1,13 @@
 import React from 'react';
-import GridResult from "./GridResult";
+import GridResult from './GridResult';
+import styles from './css/ResultsGrid.module.css';
 
-function ResultsGrid({ results, currentPage }) {
+function ResultsGrid({ results }) {
     return (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px' }}>
-            {
-                results
-                    .slice((currentPage - 1) * 16, currentPage * 16)
-                    .map(result => (<GridResult key={result.result_id} result={result} />))
-            }
+        <div className={styles.resultsGridContainer}>
+            {results.map(result => (
+                <GridResult key={result.result_id} result={result} />
+            ))}
         </div>
     );
 }

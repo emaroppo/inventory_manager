@@ -1,19 +1,21 @@
-import { Link } from "react-router-dom";
+import React from 'react';
+import { Link } from 'react-router-dom';
+import styles from './css/Home.module.css';
 
-function Home() {
-    return (
-        <>
-            <div className="Home" style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/cover.jpg)`, position: 'relative', height: '95vh', color: 'white' }}>
-                <h1>Home</h1>
-                <div className="Cover">
-                </div>
-                <div className="Quick-links" style={{ position: 'absolute', bottom: 0, width: '100%', display: 'flex', justifyContent: 'space-evenly', alignItems: 'center' }}>
-                    <Link to="shop">Shop</Link>
-                    <Link to="locate/store">Store Locator</Link>
-                </div>
-            </div>
-        </>
-    );
-}
+const Home = () => {
+  return (
+    <div className={styles.homeContainer}>
+      <h1>Welcome to Our Supermarket!</h1>
+      <div className={styles.buttonsContainer}>
+        <Link to="/shop" className={styles.button}>
+          Shop Now
+        </Link>
+        <Link to="/store-locator" className={styles.button}>
+          Find a Store
+        </Link>
+      </div>
+    </div>
+  );
+};
 
 export default Home;

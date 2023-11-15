@@ -1,0 +1,27 @@
+.gridResultCard {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+    border-radius: 5px;
+    transition: box-shadow 0.3s;
+  }
+  
+  .gridResultCard:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+  }
+  
+  .productImage {
+    width: 100%;
+    height: auto;
+    margin-bottom: 10px;
+  }
+  
+  .productName {
+    font-size: 1.1em;
+    margin-bottom: 5px;
+  }
+  
+  .productPrice {
+    margin-bottom: 10px;
+  }
+  

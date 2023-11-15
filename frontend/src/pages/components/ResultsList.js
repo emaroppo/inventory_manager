@@ -1,16 +1,18 @@
 import React from 'react';
-import ListResult from "./ListResult";
+import ListResult from './ListResult'; 
+import styles from './css/ResultsList.module.css'; 
 
-function ResultsList({ results, currentPage, ActionButtonComponent, actionButtonProps }) {
+function ResultsList({ results, ActionButtonComponent, actionButtonProps }) {
     console.log(results);
-
     return (
-        <div>
-            {results.slice((currentPage - 1) * 16, currentPage * 16).map(result => (
-                <div key={result.result_id} style={{ display: 'flex', alignItems: 'center' }}>
-                    <ListResult result={result} />
-                    <ActionButtonComponent {...actionButtonProps(result)} />
-                </div>
+        <div className={styles.resultsListContainer}>
+            {results.map(result => (
+                <ListResult 
+                    key={result.result_id} 
+                    result={result} 
+                    ActionButtonComponent={ActionButtonComponent}
+                    actionButtonProps={actionButtonProps(result)}
+                />
             ))}
         </div>
     );

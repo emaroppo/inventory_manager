@@ -1,0 +1,59 @@
+.layoutContainer {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  .navBar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #4caf50; /* Green shade */
+    color: white;
+    padding: 10px 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .navBar a {
+    color: white;
+    text-decoration: none;
+    margin: 0 10px;
+    font-weight: 500;
+  }
+  
+  .navBar a:hover {
+    color: #81c784; /* Lighter green for hover */
+    text-decoration: none;
+  }
+  
+  .logo {
+    font-size: 1.5em;
+    font-weight: bold;
+  }
+  
+  .menuItems {
+    display: flex;
+  }
+  
+  .menuItem {
+    margin-left: 20px;
+    position: relative;
+  }
+  
+  .menuItem i {
+    margin-right: 5px;
+  }
+  
+  @media screen and (max-width: 768px) {
+    .navBar {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .menuItems {
+      width: 100%;
+      justify-content: space-around;
+      margin-top: 10px;
+    }
+  }
+  

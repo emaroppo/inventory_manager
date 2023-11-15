@@ -1,11 +1,11 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom'; // Updated import
+import { useNavigate } from 'react-router-dom';
 
 function ShowOrderDetails({ orderId }) {
-    const navigate = useNavigate(); // Updated hook
+    const navigate = useNavigate(); 
 
     const handleClick = () => {
-        navigate(`/order-details/${orderId}`); // Updated navigation method
+        navigate(`/order-details/${orderId}`); 
     };
 
     return (

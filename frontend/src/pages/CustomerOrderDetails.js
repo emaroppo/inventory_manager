@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ResultsList from './components/ResultsList';
 import PlaceholderButton from './components/PlaceholderButton'; // Assuming you have a placeholder button component
 import { useParams } from 'react-router-dom';
+import styles from './css/CustomerOrderDetails.module.css';
 
 const API_ADDRESS = process.env.REACT_APP_API_ADDRESS;
 
@@ -46,7 +47,7 @@ function CustomerOrderDetails() {
     if (loading) return <div>Loading...</div>;
 
     return (
-        <div>
+        <div className={styles.orderDetailsContainer}>
             <h1>Order Details</h1>
             <ResultsList 
                 results={results} 

@@ -10,7 +10,6 @@ function CheckoutButton({ onCheckoutSuccess }) {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                // Include any required authentication tokens or additional data
             });
 
             if (response.ok) {

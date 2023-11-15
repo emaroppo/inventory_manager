@@ -1,24 +1,26 @@
+import React from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import styles from './css/CategoryList.module.css';
 
 function CategoryList({ categories }) {
     const navigate = useNavigate();
     const { category_name } = useParams();
 
     return (
-        <div>
-            <h2>Categories</h2>
-            <Link to="/shop" style={{ display: 'block', marginBottom: '10px', fontWeight: !category_name ? 'bold' : 'normal' }} onClick={() => navigate('/shop')}>
+        <div className={styles.categoryListContainer}>
+            <h2 className={styles.categoryListTitle}>Categories</h2>
+            <Link 
+                to="/shop" 
+                className={category_name ? styles.categoryItem : styles.categoryItemActive}
+                onClick={() => navigate('/shop')}
+            >
                 All products
             </Link>
             {categories.map(category => (
                 <Link
                     key={category.category_id}
                     to={`/shop/${category.category_name}`}
-                    style={{
-                        display: 'block',
-                        marginBottom: '10px',
-                        fontWeight: category.category_name === category_name ? 'bold' : 'normal'
-                    }}
+                    className={category.category_name === category_name ? styles.categoryItemActive : styles.categoryItem}
                     onClick={() => navigate(`/shop/${category.category_name}`)}
                 >
                     {category.category_name}

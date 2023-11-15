@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ResultsList from './components/ResultsList';
 import ShowOrderDetails from './components/ShowOrderDetails';
+import styles from './css/CustomerOrders.module.css';
 
 const API_ADDRESS = process.env.REACT_APP_API_ADDRESS;
 
@@ -40,14 +41,16 @@ function CustomerOrders() {
     }));
 
     return (
-        <ResultsList 
-            results={results} 
-            currentPage={currentPage} 
-            ActionButtonComponent={ShowOrderDetails}
-            actionButtonProps={(order) => ({
-                orderId: order.result_id
-            })}
-        />
+        <div className={styles.ordersContainer}>
+            <ResultsList 
+                results={results} 
+                currentPage={currentPage} 
+                ActionButtonComponent={ShowOrderDetails}
+                actionButtonProps={(order) => ({
+                    orderId: order.result_id
+                })}
+            />
+        </div>
     );
 }
 

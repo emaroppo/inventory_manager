@@ -1,0 +1,38 @@
+/* ListResult.module.css */
+.listResultItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .productDetails {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+  }
+  
+  .productImage {
+    width: 80px; 
+    height: 80px; 
+    object-fit: cover; /* Maintains aspect ratio */
+    border-radius: 5px; /* Rounded corners for a softer look */
+    margin-right: 10px; /* Space between image and text */
+  }
+  
+  .leftLinesContainer, .rightLinesContainer {
+    display: flex;
+    flex-direction: column;
+    margin-left: 10px;
+  }
+  
+  .rightLinesContainer {
+    margin-left: auto; 
+    align-items: flex-end;
+  }
+  
+  .productInfo, .productPrice {
+    margin-bottom: 5px;
+  }
+  

@@ -1,22 +1,23 @@
-import React from "react";
-import styles from "../css/ListResult.module.css";
+import React from 'react';
+import styles from './css/ListResult.module.css'; // Import CSS module
 
-function ListResult({ result }) {
-    const imagePath = process.env.PUBLIC_URL + '/' + result.result_image;
-    const leftLines = result.leftLines;
-    const rightLines = result.rightLines;
-    // Add any other store-specific details you want to display on the right side here.
-
-    console.log(result);
+function ListResult({ result, ActionButtonComponent, actionButtonProps }) {
     return (
-        <div className={styles.listResult}>
-            <img src={imagePath} alt={result.result_name} className={styles.resultImg} />
-            <div className={styles.leftLines}>
-                {leftLines.map((line, index) => <p key={index}>{line}</p>)}
+        <div className={styles.listResultItem}>
+            <div className={styles.productDetails}>
+                <img src={result.result_image} alt={result.leftLines.join(', ')} className={styles.productImage} />
+                <div className={styles.leftLinesContainer}>
+                    {result.leftLines.map((line, index) => (
+                        <div key={index} className={styles.productInfo}>{line}</div>
+                    ))}
+                </div>
+                <div className={styles.rightLinesContainer}>
+                    {result.rightLines.map((line, index) => (
+                        <div key={index} className={styles.productPrice}>{line}</div>
+                    ))}
+                </div>
             </div>
-            <div className={styles.rightLines}>
-                {rightLines.map((line, index) => <p key={index}>{line}</p>)}
-            </div>
+            {ActionButtonComponent && <ActionButtonComponent {...actionButtonProps} />}
         </div>
     );
 }

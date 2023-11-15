@@ -1,0 +1,28 @@
+.categoryListContainer {
+    padding: 10px;
+    background-color: #f7f7f7;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .categoryListTitle {
+    margin-bottom: 15px;
+  }
+  
+  .categoryItem, .categoryItemActive {
+    display: block;
+    margin-bottom: 10px;
+    color: #333;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  
+  .categoryItem:hover {
+    color: #4caf50; 
+  }
+  
+  .categoryItemActive {
+    font-weight: bold;
+    color: #4caf50; 
+  }
+  

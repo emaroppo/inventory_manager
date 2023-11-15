@@ -16,17 +16,19 @@ function Cart() {
     const fetchData = async () => {
         const response = await fetch(`${API_ADDRESS}/cart`);
         const data = await response.json();
+        console.log(data);
         setCartItems(data);
     };
 
     useEffect(() => {
         if (cartItems.hasOwnProperty('items')) {
             const results = cartItems.items.map(item => ({
-                result_id: item.product_id,
-                result_image: item.product_image,
-                leftLines: [item.product_name],
-                rightLines: [item.product_price, item.qty]
+                result_id: item.item.product_id,
+                result_image: item.item.product_image,
+                leftLines: [item.item.product_name],
+                rightLines: [item.item.product_price, item.qty]
             }));
+            
 
             setResultsList(
                 <ResultsList 
