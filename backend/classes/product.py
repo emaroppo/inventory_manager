@@ -22,27 +22,24 @@ class Product:
 
     @classmethod
     def search(cls, filters, page=0, per_page=0, to_json=False):
-        """Filters should be a list of dictionaries s.t.
-        [{store_id:1, category_id:1}, {store_id:3, category_id:2}] results in:
-        (store_id=1 AND category_id=1) OR (store_id=3 AND category_id=2)"""
+        parameters = []
         if filters:
-            query = """SELECT * FROM products WHERE """
-            for i, filter in enumerate(filters):
-                if i > 0:
-                    query += """ OR """
-                for j, key in enumerate(filter):
-                    if j > 0:
-                        query += """ AND """
-                    query += f"""{key}=?"""
-            sql_query = """SELECT * FROM products WHERE product_id IN (SELECT product_id FROM stock WHERE store_id=?) AND category_id=?"""
-
+            query_parts = []
+            for filter_dict in filters:
+                filter_clauses = []
+                for key, value in filter_dict.items():
+                    filter_clauses.append(f"{key}=?")
+                    parameters.append(value)
+                query_parts.append(" AND ".join(filter_clauses))
+            query = "SELECT * FROM products WHERE " + " OR ".join(query_parts)
         else:
-            sql_query = """SELECT * FROM products"""
+            query = "SELECT * FROM products"
 
         if per_page:
-            sql_query += f""" LIMIT {per_page} OFFSET {page*per_page}"""
+            query += " LIMIT ? OFFSET ?"
+            parameters.extend([per_page, page * per_page])
 
-        results = cls.db.execute(sql_query, filters).fetchall()
+        results = cls.db.execute(query, parameters).fetchall()
         results = [cls(*result) for result in results]
         if to_json:
             results = [result.to_json() for result in results]
@@ -88,9 +85,11 @@ class Product:
         )
 
 
-class InventoryItem(Product):
-    def __init__(self, product_id, product_name, category_id, qty, store_id):
-        super().__init__(product_id, product_name, category_id)
+class InventoryItem:
+    #TO DO: implement from_db method
+    db = db
+    def __init__(self, product:Product, qty, store_id):
+        self.product=product
         self.qty = qty
         self.store_id = store_id
 
@@ -107,37 +106,31 @@ class InventoryItem(Product):
             raise ValueError("Not enough stock")
 
     def to_json(self):
-        out_json = super().to_json()
+        out_json = self.product.to_json()
         out_json["qty"] = self.qty
+        out_json["store_id"] = self.store_id
         return out_json
 
     def save(self):
         sql_query = """UPDATE stock SET qty=? WHERE product_id=? AND store_id=?"""
-        self.db.execute(sql_query, (self.qty, self.product_id, self.store_id))
+        self.db.execute(sql_query, (self.qty, self.product.product_id, self.store_id))
         self.db.conn.commit()
 
 
 class OrderItem(InventoryItem):
-    @classmethod
-    def from_product(cls, product: Product, qty, order_id, shipping_status):
-        return cls(
-            product.product_id,
-            product.product_name,
-            product.category_id,
-            qty,
-            order_id,
-            shipping_status,
-        )
+    #TO DO: implement from_db method
+    db = db
 
     def __init__(
-        self, product_id, product_name, category_id, qty, order_id, shipping_status
-    ):
-        super().__init__(product_id, product_name, category_id, qty)
+        self, product, qty, order_id, shipping_status=0
+    ): #change to match default value in db
+        self.product = product
+        self.qty = qty
         self.order_id = order_id
         self.shipping_status = shipping_status
 
     def to_json(self):
-        out_json = super().to_json()
+        out_json = self.product.to_json()
         out_json["order_id"] = self.order_id
         out_json["shipping_status"] = self.shipping_status
         return out_json
@@ -145,6 +138,6 @@ class OrderItem(InventoryItem):
     def save(self):
         sql_query = """UPDATE order_details SET shipping_status=? WHERE product_id=? AND order_id=?"""
         self.db.execute(
-            sql_query, (self.shipping_status, self.product_id, self.order_id)
+            sql_query, (self.shipping_status, self.product.product_id, self.order_id)
         )
         self.db.conn.commit()
