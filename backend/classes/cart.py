@@ -79,6 +79,12 @@ class Cart:
         order = CustomerOrder.add(user_id=self.user_id)
         # add items to order
         order.add_items(self.items)
+        # empty cart
+        self.items = []
+        self.db.execute(
+            """DELETE FROM cart_items WHERE user_id=?""", (self.user_id,)
+        )
+        self.conn.commit()
         return order
 
     def to_json(self):
