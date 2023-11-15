@@ -6,9 +6,10 @@ class Order:
     db = db
     conn = conn
 
-    def __init__(self, order_id, items=list()):
+    def __init__(self, order_id, status_id=0):
         self.order_id = order_id
-        self.items = items
+        self.status_id = status_id
+        self.items = list()
 
 
 class CustomerOrder(Order):
@@ -21,7 +22,7 @@ class CustomerOrder(Order):
         return order
 
     @classmethod
-    def add(cls, user_id, order_items=list()):
+    def add(cls, user_id):
         cls.db.execute(
             "INSERT INTO customer_orders (user_id) VALUES (?)",
             (user_id,),
@@ -38,22 +39,31 @@ class CustomerOrder(Order):
         results = [cls(*result) for result in results]
         return results
 
-    def __init__(self, order_id, user_id, items=list()):
-        super().__init__(order_id, items)
+    def __init__(self, order_id, user_id, status_id=0):
+        super().__init__(order_id, status_id)
         self.user_id = user_id
 
     def add_items(self, items):
         items = [
-            OrderItem.from_product(product, qty, order_id=self.order_id)
+            OrderItem(product, qty, order_id=self.order_id)
             for product, qty in items
         ]
+        print(items)
+        print(self.items)
         self.items += items
         #insert into order_items
         for item in items:
             self.db.execute(
                 """INSERT INTO order_items (order_id, product_id, qty) VALUES (?, ?, ?)""",
                 (self.order_id, item.product.product_id, item.qty),
-            )   
+            )
+    def to_json(self):
+        return {
+            "order_id": self.order_id,
+            "user_id": self.user_id,
+            "status_id": self.status_id,
+            "items": [item.to_json() for item in self.items],
+        }
 
 
 class RestockOrder(Order):

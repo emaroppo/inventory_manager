@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ResultsList from './components/ResultsList';
-import CheckoutButton from './components/CheckoutButton';
+import CheckoutButton from './components/CheckoutButton'; // Import CheckoutButton
 
 const API_ADDRESS = process.env.REACT_APP_API_ADDRESS;
 
@@ -8,16 +8,15 @@ function Cart() {
     const [cartItems, setCartItems] = useState([]);
     const [resultsList, setResultsList] = useState([]);
 
-    // This function will fetch the updated cart data
-    const fetchCartData = async () => {
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    const fetchData = async () => {
         const response = await fetch(`${API_ADDRESS}/cart`);
         const data = await response.json();
-        setCartItems(data);  // schedules an update to cartItems
+        setCartItems(data);
     };
-
-    useEffect(() => {
-        fetchCartData();
-    }, []);
 
     useEffect(() => {
         if (cartItems.hasOwnProperty('items')) {
@@ -34,27 +33,23 @@ function Cart() {
                 'rightLines': [result.result_price, result.result_qty],
             }));
 
-            const newResultsList = (
-                <ResultsList
-                    key={1000}
-                    results={results}
-                    currentPage={1}
-                    onItemRemoved={fetchCartData} // Pass the fetch function as a prop
-                />
-            );
+            const newResultsList = <ResultsList key={1000} results={results} currentPage={1} />;
             setResultsList(newResultsList);
         }
     }, [cartItems]);
-    const handleCheckout = (order) => {
-        console.log(order); // log the order data
-        // Here you can handle the order data, for example, by showing a success message
+
+    // Callback function to handle successful checkout
+    const handleCheckoutSuccess = () => {
+        console.log('Checkout successful. Refreshing cart...');
+        fetchData(); // Fetch updated cart data
     };
 
-    return (<>
-        {resultsList}
-        <CheckoutButton onCheckout={handleCheckout} />
-    </>);
+    return (
+        <>
+            {resultsList}
+            <CheckoutButton onCheckoutSuccess={handleCheckoutSuccess} />
+        </>
+    );
 }
 
 export default Cart;
-

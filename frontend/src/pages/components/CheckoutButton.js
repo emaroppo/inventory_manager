@@ -2,13 +2,26 @@ import React from 'react';
 
 const API_ADDRESS = process.env.REACT_APP_API_ADDRESS;
 
-function CheckoutButton({ onCheckout }) {
+function CheckoutButton({ onCheckoutSuccess }) {
     const handleCheckout = async () => {
-        const response = await fetch(`${API_ADDRESS}/cart/checkout`, {
-            method: 'POST',
-        });
-        const data = await response.json();
-        onCheckout(data);
+        try {
+            const response = await fetch(`${API_ADDRESS}/cart/checkout`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                // Include any required authentication tokens or additional data
+            });
+
+            if (response.ok) {
+                console.log('Checkout Successful');
+                onCheckoutSuccess(); // Callback to inform the Cart component
+            } else {
+                console.error('Checkout Failed:', await response.json());
+            }
+        } catch (error) {
+            console.error('Error during checkout:', error);
+        }
     };
 
     return (

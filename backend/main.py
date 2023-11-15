@@ -113,6 +113,7 @@ async def add_to_cart(request: Request):
 @app.post("/cart/remove_item")
 async def add_to_cart(request: Request):
     cart = Cart.from_user_id(1)
+    print(cart)
     data = await request.json()
     product_id = data["product_id"]
     print(product_id)
