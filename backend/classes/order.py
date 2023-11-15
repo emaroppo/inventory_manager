@@ -14,11 +14,14 @@ class Order:
 
 class CustomerOrder(Order):
     @classmethod
-    def from_id(cls, order_id):
+    def from_id(cls, order_id, to_json=False):
         args = cls.db.execute(
             """SELECT * FROM customer_orders WHERE order_id=?""", (order_id,)
         ).fetchone()
         order = cls(*args)
+        order.items = OrderItem.from_order_id(order_id)
+        if to_json:
+            order = order.to_json()
         return order
 
     @classmethod
@@ -32,11 +35,13 @@ class CustomerOrder(Order):
         return cls.from_id(cls.db.lastrowid)
 
     @classmethod
-    def search(cls, user_id):
+    def search(cls, user_id, to_json=False):
         results = cls.db.execute(
             """SELECT * FROM customer_orders WHERE user_id=?""", (user_id,)
         ).fetchall()
         results = [cls(*result) for result in results]
+        if to_json:
+            results = [result.to_json() for result in results]
         return results
 
     def __init__(self, order_id, user_id, status_id=0):
@@ -45,7 +50,7 @@ class CustomerOrder(Order):
 
     def add_items(self, items):
         items = [
-            OrderItem(product, qty, order_id=self.order_id)
+            OrderItem(self.order_id, product, qty)
             for product, qty in items
         ]
         print(items)

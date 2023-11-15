@@ -1,11 +1,10 @@
 from .db import db
-
-
 class Product:
     db = db
 
     @classmethod
     def from_id(cls, product_id):
+        print(product_id)
         args = cls.db.execute(
             """SELECT * FROM products WHERE product_id=?""", (product_id,)
         ).fetchone()
@@ -121,16 +120,30 @@ class OrderItem(InventoryItem):
     #TO DO: implement from_db method
     db = db
 
+    @classmethod
+    def from_order_id(cls, order_id):
+        args = cls.db.execute(
+            """SELECT * FROM order_items WHERE order_id=?""", (order_id,)
+        ).fetchall()
+        order_items = [cls(*arg) for arg in args]
+        return order_items
+
     def __init__(
-        self, product, qty, order_id, shipping_status=0
+        self, order_id, product, qty, shipping_status=0
     ): #change to match default value in db
-        self.product = product
+        if type(product) == int:
+            self.product = Product.from_id(product)
+        elif type(product) == Product:
+            self.product = product
+        else:
+            raise TypeError("product must be of type Product or int")
         self.qty = qty
         self.order_id = order_id
         self.shipping_status = shipping_status
 
     def to_json(self):
         out_json = self.product.to_json()
+        out_json["qty"] = self.qty
         out_json["order_id"] = self.order_id
         out_json["shipping_status"] = self.shipping_status
         return out_json

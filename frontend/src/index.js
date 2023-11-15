@@ -7,6 +7,8 @@ import Shop from "./pages/Shop";
 import StoreLocator from './pages/StoreLocator';
 import "./index.css";
 import AdminPanel from './pages/admin/AdminPanel';
+import CustomerOrders from './pages/CustomerOrders';
+import CustomerOrderDetails from './pages/CustomerOrderDetails';
 
 import Cart from './pages/Cart';
 
@@ -22,6 +24,9 @@ export default function App() {
           <Route path="/locate/store" element={<StoreLocator />} />
           <Route path="/admin" element={<AdminPanel />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/orders" element={<CustomerOrders />} />
+          <Route path="/order-details/:orderId" element={<CustomerOrderDetails />} />
+          
         </Route>
         <Route path="*" element={<h1>Not Found</h1>} />
       </Routes>

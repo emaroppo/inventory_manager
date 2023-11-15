@@ -10,6 +10,7 @@ function Layout() {
                 <Link to="locate/store">Store Locator</Link>
                 <Link to="admin">Admin</Link>
                 <Link to="cart">Cart</Link>
+                <Link to="orders">Orders</Link>
             </nav>
             <Outlet />
         </div>

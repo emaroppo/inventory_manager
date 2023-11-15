@@ -82,12 +82,18 @@ async def add_store(street_n, street_name, city, ZIP, store_image):
 
 
 @app.post("/user/orders")
-async def show_orders(user_id):
+async def show_orders(request: Request):
+    user_id = await request.json()
+    print(user_id)
+    user_id = user_id["user_id"]
     return CustomerOrder.search(user_id=user_id, to_json=True)
 
 
-@app.get("/user/orders/{order_id}")
-async def show_order(order_id):
+@app.post("/user/orders/view_order")
+async def show_order(request: Request):
+    order_id = await request.json()
+    order_id = order_id["order_id"]
+
     return CustomerOrder.from_id(order_id, to_json=True)
 
 
