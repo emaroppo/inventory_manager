@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const InnerComponent = ({ tableName, fields, url }) => {
+const TableEntryForm = ({ tableName, fields, url }) => {
     const [formData, setFormData] = useState({});
 
     const handleChange = (e, field) => {
@@ -41,4 +41,4 @@ const InnerComponent = ({ tableName, fields, url }) => {
     );
 };
 
-export default InnerComponent;
+export default TableEntryForm;

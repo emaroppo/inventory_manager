@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import ResultsList from './components/ResultsList';
+import ResultsList from './components/common/ResultsList';
 
 const API_ADDRESS = process.env.REACT_APP_API_ADDRESS;
 

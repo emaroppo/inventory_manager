@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import ResultsList from './components/ResultsList';
+import ResultsList from './components/common/ResultsList';
 import ShowOrderDetails from './components/ShowOrderDetails';
 import styles from './css/CustomerOrders.module.css';
 

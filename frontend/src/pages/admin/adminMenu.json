@@ -1,0 +1,25 @@
+[
+    {
+        "id": 1,
+        "name": "Restock and Inventory",
+        "path": "inventory",
+        "submenu": [
+            { "id": 11, "name": "Store Inventory", "path": "store" },
+            { "id": 12, "name": "Product Inventory", "path": "product" }
+        ]
+    },
+    {
+        "id": 2,
+        "name": "Fulfill Orders",
+        "path": "fulfill_orders"
+    },
+    {
+        "id": 3,
+        "name": "DB Manager",
+        "path": "db_manager",
+        "submenu": [
+            { "id": 31, "name": "Add Entry", "path": "add_entry" },
+            { "id": 32, "name": "View/Edit/Delete Entry", "path": "edit_entry" }
+        ]
+    }
+]

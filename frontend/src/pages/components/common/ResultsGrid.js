@@ -1,6 +1,6 @@
 import React from 'react';
 import GridResult from './GridResult';
-import styles from './css/ResultsGrid.module.css';
+import styles from '../css/ResultsGrid.module.css';
 
 function ResultsGrid({ results }) {
     return (

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import ResultsList from './components/ResultsList';
+import ResultsList from './components/common/ResultsList';
 import PlaceholderButton from './components/PlaceholderButton'; // Assuming you have a placeholder button component
 import { useParams } from 'react-router-dom';
 import styles from './css/CustomerOrderDetails.module.css';

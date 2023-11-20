@@ -1,35 +1,34 @@
-import OuterComponent from "./AddEntries";
+import React from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
+import AddEntries from "./AddEntries";
+import NavigationList from "../components/common/NavigationList";
+import adminMenu from './adminMenu.json';
+import dataSchema from './dataSchema.json';
+import styles from './AdminPanel.module.css';
 
 function AdminPanel() {
-
-    const schema = {
-        'categories': {
-            'fields': ['category_name'],
-            'url': 'http://192.168.2.169:8000/categories/add_category'
-        },
-        'products': {
-            'fields': ['product_name',
-                'product_price',
-                'product_image',
-                'category_id'],
-            'url': 'http://192.168.2.169:8000/products/add_product'
-        },
-        'stores': {
-            'fields': ['street_n',
-                'street_name',
-                'city',
-                'ZIP',
-                'store_image'],
-            'url': 'http://192.168.2.169:8000/stores/add_store'
-        }
-    }
-
+    const location = useLocation();
 
     return (
-        <div>
-            <h1>Admin Panel</h1>
-            {schema && <OuterComponent schema={schema} />}
-        </div >
+        <div className={styles.adminContainer}>
+            <div className={styles.adminNavigation}>
+                <NavigationList
+                    items={adminMenu}
+                    determineActive={(item) => location.pathname.includes(item.path)}
+                    renderLabel={(item) => item.name}
+                    basePath="/admin"
+                />
+            </div>
+            <div className={styles.settingsSection}>
+                <Routes>
+                    <Route 
+                        path="db_manager/add_entry" 
+                        element={<AddEntries schema={dataSchema} />} 
+                    />
+                    {/* Additional routes for other menu items can be added here */}
+                </Routes>
+            </div>
+        </div>
     );
 }
 

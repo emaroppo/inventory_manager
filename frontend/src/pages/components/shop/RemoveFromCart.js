@@ -16,7 +16,6 @@ function RemoveFromCart({ productId, onItemRemoved }) {
             });
 
             if (response.ok) {
-                // Handle successful response if needed
                 const data = await response.json();
                 console.log('Item removed from cart:', data);
                 onItemRemoved(); // Call the callback function

@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './css/ListResult.module.css'; // Import CSS module
+import styles from '../css/ListResult.module.css'; // Import CSS module
 
 function ListResult({ result, ActionButtonComponent, actionButtonProps }) {
     return (

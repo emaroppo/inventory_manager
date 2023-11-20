@@ -1,6 +1,6 @@
 import React from 'react';
-import AddToCart from './AddToCart'; // Adjust the path based on your file structure
-import styles from './css/GridResult.module.css'; // Import CSS module
+import AddToCart from '../shop/AddToCart'; 
+import styles from '../css/GridResult.module.css'; 
 
 function GridResult({ result }) {
     return (

@@ -1,26 +1,34 @@
 import React, { useState } from 'react';
-import InnerComponent from './AddEntryForm';
+import TableEntryForm from './TableEntryForm';
 
-const OuterComponent = ({ schema }) => {
-    const [activeTable, setActiveTable] = useState(null);
+const AddEntries = ({ schema }) => {
+    const [activeTable, setActiveTable] = useState('');
+
+    const handleDropdownChange = (event) => {
+        setActiveTable(event.target.value);
+    };
 
     return (
         <div>
-            {Object.entries(schema).map(([tableName, tableData]) => (
-                <div key={tableName}>
-                    <button onClick={() => setActiveTable(activeTable === tableName ? null : tableName)}>
+            <h2>Add Entries</h2>
+            <select value={activeTable} onChange={handleDropdownChange}>
+                <option value="">Select a table</option>
+                {Object.keys(schema).map(tableName => (
+                    <option key={tableName} value={tableName}>
                         {tableName}
-                    </button>
-                    {activeTable === tableName &&
-                        <InnerComponent
-                            tableName={tableName}
-                            fields={tableData.fields}
-                            url={tableData.url}
-                        />}
-                </div>
-            ))}
+                    </option>
+                ))}
+            </select>
+
+            {activeTable && (
+                <TableEntryForm
+                    tableName={activeTable}
+                    fields={schema[activeTable].fields}
+                    url={schema[activeTable].url}
+                />
+            )}
         </div>
     );
 };
 
-export default OuterComponent;
+export default AddEntries;

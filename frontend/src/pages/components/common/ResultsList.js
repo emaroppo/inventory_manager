@@ -1,6 +1,6 @@
 import React from 'react';
 import ListResult from './ListResult'; 
-import styles from './css/ResultsList.module.css'; 
+import styles from '../css/ResultsList.module.css'; 
 
 function ResultsList({ results, ActionButtonComponent, actionButtonProps }) {
     console.log(results);

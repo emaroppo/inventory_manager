@@ -1,0 +1,14 @@
+.adminContainer {
+    display: flex;
+    margin: 20px;
+  }
+  
+  .adminNavigation {
+    flex: 1;
+    margin-right: 20px;
+  }
+  
+  .settingsSection {
+    flex: 3;
+  }
+  
