@@ -141,3 +141,17 @@ async def checkout_cart():
 async def show_cart():
     cart = Cart.from_user_id(1)
     return cart.to_json()
+
+
+@app.post("/inventory/store")
+async def show_inventory_by_store(request: Request):
+    store_id = await request.json()
+    store_id = store_id["store_id"]
+    return Store.from_id(store_id).show_inventory(to_json=True)
+
+
+@app.post("/inventory/product")
+async def show_inventory_by_product(request: Request):
+    product_id = await request.json()
+    product_id = product_id["product_id"]
+    return Product.from_id(product_id).show_inventory(to_json=True)

@@ -1,5 +1,4 @@
 from .db import db
-from prettytable import PrettyTable
 from .order import CustomerOrder
 from .product import Product
 
@@ -62,6 +61,13 @@ class Store:
         self.city = city
         self.ZIP = ZIP
         self.store_image = store_image
+
+    def show_inventory(self):
+        inventory = self.db.show_inventory(self.store_id)
+        inventory_view.field_names = ["Product ID", "Product", "Quantity"]
+        for item in inventory:
+            inventory_view.add_row(item)
+        print(inventory_view)
 
     # Order
 

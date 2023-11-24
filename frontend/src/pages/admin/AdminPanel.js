@@ -5,6 +5,7 @@ import NavigationList from "../components/common/NavigationList";
 import adminMenu from './adminMenu.json';
 import dataSchema from './dataSchema.json';
 import styles from './AdminPanel.module.css';
+import StoreLocator from '../StoreLocator';
 
 function AdminPanel() {
     const location = useLocation();
@@ -21,6 +22,10 @@ function AdminPanel() {
             </div>
             <div className={styles.settingsSection}>
                 <Routes>
+                    <Route 
+                        path="inventory/store/select" 
+                        element={<StoreLocator />}
+                    />
                     <Route 
                         path="db_manager/add_entry" 
                         element={<AddEntries schema={dataSchema} />} 

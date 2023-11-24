@@ -1,4 +1,6 @@
 from .db import db
+
+
 class Product:
     db = db
 
@@ -66,6 +68,13 @@ class Product:
         else:
             return True
 
+    def show_inventory(self):
+        self.db.execute(
+            """SELECT * FROM stock WHERE product_id = ?""",
+            (self.product_id,),
+        )
+        return self.db.c.fetchall()
+
     def to_json(self):
         return {
             "product_id": self.product_id,
@@ -85,10 +94,11 @@ class Product:
 
 
 class InventoryItem:
-    #TO DO: implement from_db method
+    # TO DO: implement from_db method
     db = db
-    def __init__(self, product:Product, qty, store_id):
-        self.product=product
+
+    def __init__(self, product: Product, qty, store_id):
+        self.product = product
         self.qty = qty
         self.store_id = store_id
 
@@ -117,7 +127,7 @@ class InventoryItem:
 
 
 class OrderItem(InventoryItem):
-    #TO DO: implement from_db method
+    # TO DO: implement from_db method
     db = db
 
     @classmethod
@@ -130,7 +140,7 @@ class OrderItem(InventoryItem):
 
     def __init__(
         self, order_id, product, qty, shipping_status=0
-    ): #change to match default value in db
+    ):  # change to match default value in db
         if type(product) == int:
             self.product = Product.from_id(product)
         elif type(product) == Product:

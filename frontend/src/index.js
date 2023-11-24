@@ -10,6 +10,7 @@ import StoreLocator from './pages/StoreLocator';
 import AdminPanel from './pages/admin/AdminPanel';
 import CustomerOrders from './pages/CustomerOrders';
 import CustomerOrderDetails from './pages/CustomerOrderDetails';
+import ShowStoreInventory from './pages/ShowStoreInventory';
 import Cart from './pages/shop/Cart';
 
 import "./index.css";
@@ -27,6 +28,7 @@ export default function App() {
           <Route path="shop/:category_name" element={<Shop />} />
           <Route path="/locate/store" element={<StoreLocator />} />
           <Route path="/admin/*" element={<AdminPanel />} />
+          <Route path="/admin/inventory/store/select/details/:store_id" element={<ShowStoreInventory />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/orders" element={<CustomerOrders />} />
           <Route path="/order-details/:orderId" element={<CustomerOrderDetails />} />
